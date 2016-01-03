@@ -16,26 +16,15 @@ RUN buildDeps='autoconf \
               python-dev' \
   && set -x \
   && apk --update add python openssl file exiftool $buildDeps \
-  && cd /tmp/ \
-  && git clone --recursive --branch v3.4.0 git://github.com/plusvic/yara \
-  && cd /tmp/yara \
-  && ./bootstrap.sh \
-  && ./configure --enable-cuckoo \
-                 --enable-magic \
-                 --with-crypto \
-  && make \
-  && make install \
-  && cd yara-python \
-  && python setup.py build install \
   && apk del --purge $buildDeps \
   && rm -rf /tmp/* /root/.cache /var/cache/apk/*
 
-# Add Yara Rules
-# ADD /rules /rules
+# Add scan
+ADD scan /malware/scan
 
 VOLUME ["/malware"]
 # VOLUME ["/rules"]
 
 WORKDIR /malware
 
-ENTRYPOINT ["yara"]
+ENTRYPOINT ["scan"]
