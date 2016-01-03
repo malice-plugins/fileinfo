@@ -31,10 +31,10 @@ RUN buildDeps='autoconf \
   && rm -rf /tmp/* /root/.cache /var/cache/apk/*
 
 # Add Yara Rules
-ADD /rules /rules
+# ADD /rules /rules
 
 VOLUME ["/malware"]
-VOLUME ["/rules"]
+# VOLUME ["/rules"]
 
 WORKDIR /malware
 
