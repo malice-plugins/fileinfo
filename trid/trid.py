@@ -23,7 +23,7 @@ class TrID(FileAnalysis):
                   "utilities with hard coded logic, TrID has no fixed rules. " \
                   "Instead, it's extensible and can be trained to recognize " \
                   "new formats in a fast and automatic way."
-    severity = 2
+    severity = 0
     categories = ["file type"]
     authors = ["blacktop"]
     references = ["http://mark0.net/soft-trid-e.html"]
