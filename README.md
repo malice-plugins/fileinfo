@@ -59,10 +59,3 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 
 ### License
 MIT Copyright (c) 2016 **blacktop**
-
-<!-- Links -->
-[malice-logo]: https://raw.githubusercontent.com/maliceio/malice/master/docs/logo/malice.png
-[travis-badge]: https://travis-ci.org/maliceio/malice.svg?branch=master
-[gitter-badge]: https://badges.gitter.im/maliceio/malice.svg
-[gitter-link]: https://gitter.im/maliceio/malice
-[license]: https://img.shields.io/badge/licence-Apache%202-blue.svg
