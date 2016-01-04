@@ -10,9 +10,10 @@ RUN buildDeps='build-essential \
                adduser \
                curl' \
   && set -x \
+  && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
   && apt-get update -qq \
+  && apt-get install -t testing libc6 \
   && apt-get install -yq $buildDeps \
-                          libc6-dev \
                           libimage-exiftool-perl \
                           python --no-install-recommends \
   && set -x \
