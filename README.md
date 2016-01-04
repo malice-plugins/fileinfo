@@ -26,7 +26,7 @@ $ docker build -t blacktop/elk github.com/blacktop/docker-elk
 ```
 ### Usage
 ```bash
-$ docker run malice/fileinfo FILE
+$ docker run -v /path/to/file:/malware malice/fileinfo FILE
 ```
 This will output to stdout and POST to malice results API webhook endpoint.
 
