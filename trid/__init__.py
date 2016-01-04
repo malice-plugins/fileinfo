@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __author__ = 'blacktop'
-__copyright__ = '''Copyright (C) 2016 Josh "blacktop" Maine
+__copyright__ = '''Copyright (C) 2013-2016 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/maliceio/malice
                    See the file 'LICENSE' for copying permission.'''
 
@@ -38,7 +38,7 @@ class TrID():
     def update_definitions():
         # Update the TRiD definitions
         try:
-            r = envoy.run('python /opt/fileinfo/trid/tridupdate.py', timeout=20)
+            r = envoy.run('python /opt/info/trid/tridupdate.py', timeout=20)
             return r.std_out
         except AttributeError:
             print 'ERROR: TrID Failed.'
@@ -51,7 +51,7 @@ class TrID():
     def scan(self):
         # Run exiftool on tmp file
         try:
-            r = envoy.run('/opt/fileinfo/trid/trid ' + self.path, timeout=15)
+            r = envoy.run('/opt/info/trid/trid ' + self.path, timeout=15)
         except AttributeError:
             print 'ERROR: TrID Failed.'
             return 'trid', dict(error='TrID failed to run.')

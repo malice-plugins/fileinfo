@@ -58,3 +58,6 @@ target/
 
 ## Directory-based project format:
 .idea/
+
+# TrID Database
+triddefs.trd

@@ -4,7 +4,9 @@ MAINTAINER blacktop, https://github.com/blacktop
 
 ENV SSDEEP ssdeep-2.13
 
-COPY . /opt/fileinfo
+COPY . /opt/info
+
+ENV PATH /opt/info:$PATH
 
 RUN buildDeps='build-essential \
                python-dev \
@@ -19,7 +21,8 @@ RUN buildDeps='build-essential \
                           python --no-install-recommends \
   && set -x \
   && echo "Update TRiD Definitions..." \
-  && python /opt/fileinfo/trid/tridupdate.py \
+  && cd /opt/info/trid/ \
+  && python /opt/info/trid/tridupdate.py \
   && echo "Installing ssdeep..." \
   && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
   && cd /tmp \
@@ -38,4 +41,4 @@ VOLUME ["/malware"]
 
 WORKDIR /malware
 
-ENTRYPOINT ["/opt/fileinfo/scan"]
+ENTRYPOINT ["/opt/info/scan"]
