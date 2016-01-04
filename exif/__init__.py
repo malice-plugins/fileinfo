@@ -45,7 +45,7 @@ class Exif():
             print 'ERROR: Exif Failed.'
             return 'exif', dict(error='Exiftool failed to run.')
         except Exception, e:
-            print e.message
-        else:
-            #: return key, stdout as a dictionary
-            return dict(exif=self.format_output(r.std_out))
+            return dict(exif="", error=e.message)
+
+        #: return key, stdout as a dictionary
+        return dict(exif=self.format_output(r.std_out))

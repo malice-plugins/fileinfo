@@ -28,7 +28,7 @@ def main():
         print dict(ssdeep=pydeep.hash_file(path))
     else:
         print exf.scan()
-        # print trd.scan()
+        print trd.scan()
         print dict(ssdeep=pydeep.hash_file(path))
     return
 

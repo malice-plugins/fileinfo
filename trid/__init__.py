@@ -56,7 +56,7 @@ class TrID():
             print 'ERROR: TrID Failed.'
             return 'trid', dict(error='TrID failed to run.')
         except Exception, e:
-            print e.message
-        else:
-            # return key, stdout as a dictionary
-            return dict(trid=self.format_output(r.std_out.split(self.path)[-1]))
+            return dict(exif=dict(error=e.message))
+
+        # return key, stdout as a dictionary
+        return dict(trid=self.format_output(r.std_out.split(self.path)[-1]))
