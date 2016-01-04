@@ -1,6 +1,10 @@
 # malice-fileinfo
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
+[![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)][hub]
+[![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)][hub]
+[![Image Size](https://img.shields.io/imagelayers/image-size/malice/fileinfo/latest.svg)](https://imagelayers.io/?images=malice/fileinfo:latest)
+[![Image Layers](https://img.shields.io/imagelayers/layers/malice/fileinfo/latest.svg)](https://imagelayers.io/?images=malice/fileinfo:latest)
 
 Malice File Info Plugin
 
@@ -8,17 +12,14 @@ This repository contains a **Dockerfile** of the **Malice File Info Plugin** for
 
 ### Dependencies
 
-* [alpine:edge](https://hub.docker.com/_/alpine/)
-
-### Image Size
-[![](https://badge.imagelayers.io/malice/fileinfo:latest.svg)](https://imagelayers.io/?images=malice/fileinfo:latest 'Get your own badge on imagelayers.io')
+* [debian:wheezy (*85 MB*)](https://index.docker.io/_/debian/)
 
 ### Image Tags
 ```bash
 $ docker images
 
 REPOSITORY          TAG                 VIRTUAL SIZE
-malice/fileinfo     latest              688   MB
+malice/fileinfo     latest              202   MB
 ```
 
 ### Installation
@@ -59,3 +60,5 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 
 ### License
 MIT Copyright (c) 2016 **blacktop**
+
+[hub]: https://hub.docker.com/r/malice/fileinfo/
