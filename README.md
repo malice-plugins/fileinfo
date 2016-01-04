@@ -14,14 +14,6 @@ This repository contains a **Dockerfile** of the **Malice File Info Plugin** for
 
 * [debian:wheezy (*85 MB*)](https://index.docker.io/_/debian/)
 
-### Image Tags
-```bash
-$ docker images
-
-REPOSITORY          TAG                 VIRTUAL SIZE
-malice/fileinfo     latest              202   MB
-```
-
 ### Installation
 
 1. Install [Docker](https://www.docker.io/).
