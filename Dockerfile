@@ -5,7 +5,6 @@ MAINTAINER blacktop, https://github.com/blacktop
 ENV SSDEEP ssdeep-2.13
 
 RUN buildDeps='build-essential \
-               libfuzzy-dev \
                python-dev \
                python-pip \
                adduser \
