@@ -12,7 +12,9 @@ RUN buildDeps='build-essential \
   && set -x \
   && apt-get update -qq \
   && apt-get install -yq $buildDeps \
-                          python \
+                          libc6-dev \
+                          libimage-exiftool-perl \
+                          python --no-install-recommends \
   && set -x \
   && echo "Installing ssdeep..." \
   && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
