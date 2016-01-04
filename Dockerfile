@@ -1,34 +1,25 @@
-FROM alpine:edge
+FROM gliderlabs/alpine:edge
 
 MAINTAINER blacktop, https://github.com/blacktop
 
-RUN buildDeps='build-base \
-               python-dev \
-               py-pip \
-               curl \
-               ca-certificates' \
+ENV SSDEEP ssdeep-2.13
+
+RUN apk-install python file exiftool
+RUN apk-install -t build-deps build-base autoconf automake python-dev py-pip flex libc-dev libffi-dev libtool curl ca-certificates \
   && set -x \
-  && apk --update add python file exiftool $buildDeps \
-  && pip install --upgrade pip setuptools wheel \
-  && echo "Installing ssdeep..."
-  && curl -Ls https://downloads.sourceforge.net/project/ssdeep/ssdeep-2.13/ssdeep-2.13.tar.gz > /tmp/ssdeep.tar.gz && \
+  && echo "Installing ssdeep..." \
+  && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
   && cd /tmp \
-  && tar zxvf ssdeep.tar.gz \
-  && cd ssdeep \
+  && tar zxvf $SSDEEP.tar.gz \
+  && cd $SSDEEP \
   && ./configure \
   && make \
   && make install \
-  && pip install ssdeep \
-                 envoy \
-  && apk del --purge $buildDeps \
-  && rm -rf /tmp/* /root/.cache /var/cache/apk/*
+  && pip install envoy \
+  && rm -rf /tmp/* /root/.cache \
+  && apk del --purge build-deps
 
-# Add exiftool stuff
-ADD exif/ /opt/fileinfo/exif
-# Add TRiD stuff
-ADD trid/ /opt/fileinfo/trid
-# Add scan
-ADD scan /opt/fileinfo/scan
+COPY . /opt/fileinfo
 
 VOLUME ["/malware"]
 
