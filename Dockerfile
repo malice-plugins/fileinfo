@@ -1,11 +1,19 @@
-FROM gliderlabs/alpine:edge
+FROM debian:wheezy
 
 MAINTAINER blacktop, https://github.com/blacktop
 
 ENV SSDEEP ssdeep-2.13
 
-RUN apk-install python file exiftool
-RUN apk-install -t build-deps build-base autoconf automake python-dev py-pip flex libc-dev libffi-dev libtool curl ca-certificates \
+RUN buildDeps='build-essential \
+               libfuzzy-dev \
+               python-dev \
+               python-pip \
+               adduser \
+               curl' \
+  && set -x \
+  && apt-get update -qq \
+  && apt-get install -yq $buildDeps \
+                          python \
   && set -x \
   && echo "Installing ssdeep..." \
   && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
@@ -15,9 +23,11 @@ RUN apk-install -t build-deps build-base autoconf automake python-dev py-pip fle
   && ./configure \
   && make \
   && make install \
-  && pip install envoy \
-  && rm -rf /tmp/* /root/.cache \
-  && apk del --purge build-deps
+  && pip install envoy pydeep \
+  && echo "Clean up unnecessary files..." \
+  && apt-get purge -y --auto-remove $buildDeps \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY . /opt/fileinfo
 
