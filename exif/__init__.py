@@ -6,24 +6,12 @@ __copyright__ = '''Copyright (C) 2016 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/maliceio/malice
                    See the file 'LICENSE' for copying permission.'''
 
-
-import tempfile
-from os import unlink
-
 import envoy
-from lib.common.abstracts import FileAnalysis
-from lib.common.out import print_error
 
-# from os.path import exists
-
-ignore_tags = ['Directory',
-               'File Name',
-               'File Permissions',
-               'File Modification Date/Time']
+ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
 
-class Exif(FileAnalysis):
-
+class Exif():
     name = "ExifTool"
     description = "ExifTool is a platform-independent Perl library plus a command-line " \
                   "application for reading, writing and editing meta information in a " \
@@ -32,14 +20,13 @@ class Exif(FileAnalysis):
     categories = ["file type"]
     authors = ["blacktop"]
     references = ["http://www.sno.phy.queensu.ca/~phil/exiftool/"]
-    minimum = "v0.1-alpha"
-    # evented = True
+    minimum = "v0.1.0-alpha"
 
-    def __init__(self, data):
-        FileAnalysis.__init__(self, data)
-        self.data = data
+    def __init__(self, path):
+        self.path = path
 
-    def format_output(self, output):
+    @staticmethod
+    def format_output(output):
         exif_tag = {}
         exif_results = output.split('\n')
         exif_results = filter(None, exif_results)
@@ -51,21 +38,14 @@ class Exif(FileAnalysis):
         return exif_tag
 
     def scan(self):
-        # : create tmp file
-        handle, name = tempfile.mkstemp(suffix=".data", prefix="exif_")
-        #: Write data stream to tmp file
-        with open(name, "wb") as f:
-            f.write(self.data)
-        #: Run exiftool on tmp file
+        #: Run exiftool on file
         try:
-            r = envoy.run('exiftool ' + name, timeout=15)
+            r = envoy.run('exiftool ' + self.path, timeout=15)
         except AttributeError:
-            print_error('ERROR: Exif Failed.')
+            print 'ERROR: Exif Failed.'
             return 'exif', dict(error='Exiftool failed to run.')
+        except Exception, e:
+            print e.message
         else:
             #: return key, stdout as a dictionary
-            return 'exif', self.format_output(r.std_out)
-        finally:
-            #: delete tmp file
-            unlink(name)
-            # exists(name)
+            return dict(exif=self.format_output(r.std_out))

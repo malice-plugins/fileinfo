@@ -6,17 +6,10 @@ __copyright__ = '''Copyright (C) 2016 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/maliceio/malice
                    See the file 'LICENSE' for copying permission.'''
 
-import tempfile
-from os import unlink
-from os.path import exists
-
 import envoy
-from lib.common.abstracts import FileAnalysis
-from lib.common.out import print_error
 
 
-class TrID(FileAnalysis):
-
+class TrID():
     name = "TrID"
     description = "TrID is an utility designed to identify file types " \
                   "from their binary signatures. While there are similar " \
@@ -27,14 +20,13 @@ class TrID(FileAnalysis):
     categories = ["file type"]
     authors = ["blacktop"]
     references = ["http://mark0.net/soft-trid-e.html"]
-    minimum = "v0.1-alpha"
-    # evented = True
+    minimum = "v0.1.0-alpha"
 
-    def __init__(self, data):
-        FileAnalysis.__init__(self, data)
-        self.data = data
+    def __init__(self, path):
+        self.path = path
 
-    def format_output(self, output):
+    @staticmethod
+    def format_output(output):
         trid_results = []
         results = output.split('\n')
         results = filter(None, results)
@@ -42,26 +34,29 @@ class TrID(FileAnalysis):
             trid_results.append(trid)
         return trid_results
 
-    def update_definitions(self):
-        #: Update the TRiD definitions
-        r = envoy.run('python /opt/trid/tridupdate.py', timeout=20)
+    @staticmethod
+    def update_definitions():
+        # Update the TRiD definitions
+        try:
+            r = envoy.run('python /opt/fileinfo/trid/tridupdate.py', timeout=20)
+            return r.std_out
+        except AttributeError:
+            print 'ERROR: TrID Failed.'
+            return 'trid', dict(error='TrID failed to run.')
+        except Exception, e:
+            print e.message
+
+        return None
 
     def scan(self):
-        #: create tmp file
-        handle, name = tempfile.mkstemp(suffix=".data", prefix="trid_")
-        #: Write data stream to tmp file
-        with open(name, "wb") as f:
-            f.write(self.data)
-        #: Run exiftool on tmp file
+        # Run exiftool on tmp file
         try:
-            r = envoy.run('/opt/trid/trid ' + name, timeout=15)
+            r = envoy.run('/opt/fileinfo/trid/trid ' + self.path, timeout=15)
         except AttributeError:
-            print_error('ERROR: TrID Failed.')
+            print 'ERROR: TrID Failed.'
             return 'trid', dict(error='TrID failed to run.')
+        except Exception, e:
+            print e.message
         else:
-            #: return key, stdout as a dictionary
-            return 'trid', self.format_output(r.std_out.split(name)[-1])
-        finally:
-            #: delete tmp file
-            unlink(name)
-            # exists(name)
+            # return key, stdout as a dictionary
+            return dict(trid=self.format_output(r.std_out.split(self.path)[-1]))

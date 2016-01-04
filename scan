@@ -6,13 +6,35 @@ __copyright__ = '''Copyright (C) 2016 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/maliceio/malice
                    See the file 'LICENSE' for copying permission.'''
 
-import ssdeep
+import pydeep
+import argparse
+import exif
+import trid
 
-# ssdeep.hash_from_file('/etc/resolv.conf')
 
-hash1 = ssdeep.hash('Also called fuzzy hashes, Ctph can match inputs that have homologies.')
-hash2 = ssdeep.hash('Also called fuzzy hashes, CTPH can match inputs that have homologies.')
-print hash1
-print hash2
+def main():
+    parser = argparse.ArgumentParser(prog='malice/fileinfo')
+    parser.add_argument("-v", "--verbose", help="Display verbose output message", action="store_true", required=False)
+    parser.add_argument('file', metavar='FILE', type=str, nargs=1, help='file to scan')
+    args = parser.parse_args()
 
-print ssdeep.compare(hash1, hash2)
+    path = args.file[0]
+    exf = exif.Exif(path=path)
+    trd = trid.TrID(path=path)
+
+    if args.verbose:
+        print exf.scan()
+        print trd.scan()
+        print dict(ssdeep=pydeep.hash_file(path))
+    else:
+        print exf.scan()
+        # print trd.scan()
+        print dict(ssdeep=pydeep.hash_file(path))
+    return
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print "Error: %s" % e
