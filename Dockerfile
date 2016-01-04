@@ -4,10 +4,11 @@ MAINTAINER blacktop, https://github.com/blacktop
 
 ENV SSDEEP ssdeep-2.13
 
+COPY . /opt/fileinfo
+
 RUN buildDeps='build-essential \
                python-dev \
                python-pip \
-               adduser \
                curl' \
   && set -x \
   && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
@@ -17,6 +18,8 @@ RUN buildDeps='build-essential \
                           libimage-exiftool-perl \
                           python --no-install-recommends \
   && set -x \
+  && echo "Update TRiD Definitions..." \
+  && python /opt/fileinfo/trid/tridupdate.py \
   && echo "Installing ssdeep..." \
   && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
   && cd /tmp \
@@ -30,8 +33,6 @@ RUN buildDeps='build-essential \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-COPY . /opt/fileinfo
 
 VOLUME ["/malware"]
 
