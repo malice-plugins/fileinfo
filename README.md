@@ -18,11 +18,11 @@ This repository contains a **Dockerfile** of the **Malice File Info Plugin** for
 
 1. Install [Docker](https://www.docker.io/).
 
-2. Download [trusted build](https://index.docker.io/u/blacktop/elk/) from public [Docker Registry](https://index.docker.io/): `docker pull blacktop/elk`
+2. Download [trusted build](https://index.docker.io/u/malice/fileinfo/) from public [Docker Registry](https://index.docker.io/): `docker pull malice/fileinfo`
 
 #### Alternatively, build an image from Dockerfile
 ```bash
-$ docker build -t blacktop/elk github.com/blacktop/docker-elk
+$ docker build -t malice/fileinfo github.com/maliceio/malice-fileinfo
 ```
 ### Usage
 ```bash
@@ -51,6 +51,6 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 ### Credits
 
 ### License
-MIT Copyright (c) 2016 **blacktop**
+MIT Copyright (c) 2016 ****
 
 [hub]: https://hub.docker.com/r/malice/fileinfo/
