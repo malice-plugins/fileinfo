@@ -51,6 +51,6 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 ### Credits
 
 ### License
-MIT Copyright (c) 2016 ****
+MIT Copyright (c) 2016 **blacktop**
 
 [hub]: https://hub.docker.com/r/malice/fileinfo/
