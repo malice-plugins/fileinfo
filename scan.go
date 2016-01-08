@@ -89,6 +89,7 @@ func ParseTRiDOutput(tridout string) []byte {
 	// fmt.Println(lines)
 
 	datas := make(map[string][]string, 1)
+	datas["trid"] = lines
 	j, err := json.Marshal(datas)
 	assert(err)
 
