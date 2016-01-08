@@ -37,8 +37,8 @@ This will output to stdout and POST to malice results API webhook endpoint.
 }
 {
   "trid": [
-    " 50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)",
-    " 49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)"
+    "50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)",
+    "49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)"
   ]
 }
 {
