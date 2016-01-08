@@ -4,25 +4,29 @@ MAINTAINER blacktop, https://github.com/blacktop
 
 ENV SSDEEP ssdeep-2.13
 
-COPY . /opt/info
-
-ENV PATH /opt/info:$PATH
-
-RUN buildDeps='build-essential \
-               python-dev \
-               python-pip \
+COPY . /go/src/github.com/maliceio/malice-fileinfo
+RUN buildDeps='ca-certificates \
+               build-essential \
+               golang-go \
+               mercurial \
+               git-core \
+               unzip \
                curl' \
   && set -x \
   && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
   && apt-get update -qq \
   && apt-get install -t testing libc6 \
-  && apt-get install -yq $buildDeps \
-                          libimage-exiftool-perl \
-                          python --no-install-recommends \
+  && apt-get install -yq $buildDeps libimage-exiftool-perl --no-install-recommends \
   && set -x \
-  && echo "Update TRiD Definitions..." \
-  && cd /opt/info/trid/ \
-  && python /opt/info/trid/tridupdate.py \
+  && echo "Downloading TRiD and Database..." \
+  && curl -Ls http://mark0.net/download/trid_linux_64.zip > /tmp/trid_linux_64.zip \
+  && curl -Ls http://mark0.net/download/triddefs.zip > /tmp/triddefs.zip \
+  && cd /tmp \
+  && unzip trid_linux_64.zip \
+  && unzip triddefs.zip \
+  && chmod +x trid \
+  && mv trid /usr/bin/ \
+  && mv triddefs.trd /usr/bin/ \
   && echo "Installing ssdeep..." \
   && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
   && cd /tmp \
@@ -30,15 +34,19 @@ RUN buildDeps='build-essential \
   && cd $SSDEEP \
   && ./configure \
   && make \
-  && make install \
-  && pip install envoy pydeep \
+  && make install \  
+  && echo "Building info Go binary..." \
+  && cd /go/src/github.com/maliceio/malice-fileinfo \
+  && export GOPATH=/go \
+  && go get \
+  && go build -ldflags "-X main.Version=0.1.0" -o /bin/info \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go
 
 VOLUME ["/malware"]
 
 WORKDIR /malware
 
-ENTRYPOINT ["/opt/info/scan"]
+ENTRYPOINT ["/bin/info"]
