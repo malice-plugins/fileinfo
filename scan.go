@@ -88,7 +88,7 @@ func ParseTRiDOutput(tridout string) []byte {
 	datas := make(map[string][]string, 1)
 
 	lines := strings.Split(tridout, "\n")
-	lines = lines[5:]
+	lines = lines[6:]
 	// fmt.Println(lines)
 
 	for _, line := range lines {
