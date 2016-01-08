@@ -34,12 +34,12 @@ RUN buildDeps='ca-certificates \
   && cd $SSDEEP \
   && ./configure \
   && make \
-  && make install \  
+  && make install \
   && echo "Building info Go binary..." \
   && cd /go/src/github.com/maliceio/malice-fileinfo \
   && export GOPATH=/go \
   && go get \
-  && go build -ldflags "-X main.Version=0.1.0" -o /bin/info \
+  && go build -ldflags "-X main.Version $(cat VERSION)" -o /bin/info \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
