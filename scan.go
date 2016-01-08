@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var Version string
+
 // FileInfo json object
 type FileInfo struct {
 	SSDeep   string            `json:"ssdeep"`
@@ -96,6 +98,15 @@ func ParseTRiDOutput(tridout string) []string {
 }
 
 func main() {
+
+	if len(os.Args) < 2 {
+		fmt.Println("[ERROR] Missing input file.")
+		os.Exit(2)
+	}
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Println(Version)
+		os.Exit(0)
+	}
 
 	path := os.Args[1]
 
