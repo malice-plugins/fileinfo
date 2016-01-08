@@ -7,8 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/codegangsta/cli"
 )
 
 func assert(err error) {
@@ -98,22 +96,15 @@ func ParseTRiDOutput(tridout string) []byte {
 }
 
 func main() {
-	// argPath := os.Args[1]
-	app := cli.NewApp()
-	app.Name = "greet"
-	app.Usage = "fight the loneliness!"
-	app.Action = func(c *cli.Context) {
-		path := c.Args().First()
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			assert(err)
-		}
-		ssdeepJSON := ParseSsdeepOutput(RunCommand("ssdeep", path))
-		tridJSON := ParseTRiDOutput(RunCommand("trid", path))
-		exiftoolJSON := ParseExiftoolOutput(RunCommand("exiftool", path))
-		fmt.Println(string(ssdeepJSON))
-		fmt.Println(string(tridJSON))
-		fmt.Println(string(exiftoolJSON))
-	}
+	path := os.Args[1]
 
-	app.Run(os.Args)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		assert(err)
+	}
+	ssdeepJSON := ParseSsdeepOutput(RunCommand("ssdeep", path))
+	tridJSON := ParseTRiDOutput(RunCommand("trid", path))
+	exiftoolJSON := ParseExiftoolOutput(RunCommand("exiftool", path))
+	fmt.Println(string(ssdeepJSON))
+	fmt.Println(string(tridJSON))
+	fmt.Println(string(exiftoolJSON))
 }
