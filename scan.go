@@ -18,6 +18,14 @@ type FileInfo struct {
 	Exiftool map[string]string `json:"exiftool"`
 }
 
+func getopt(name, dfault string) string {
+	value := os.Getenv(name)
+	if value == "" {
+		value = dfault
+	}
+	return value
+}
+
 func assert(err error) {
 	if err != nil {
 		log.Fatal(err)
