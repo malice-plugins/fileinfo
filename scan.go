@@ -93,7 +93,7 @@ func ParseTRiDOutput(tridout string) []byte {
 
 	for _, line := range lines {
 		if len(line) != 0 {
-			keepLines = append(keepLines, line)
+			keepLines = append(keepLines, strings.TrimSpace(line))
 		}
 	}
 
