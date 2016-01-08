@@ -50,7 +50,6 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 		"File Modification Date/Time",
 	}
 
-	// exifJSON := make(map[string]map[string]string)
 	lines := strings.Split(exifout, "\n")
 	datas := make(map[string]string, len(lines))
 
@@ -64,26 +63,16 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 		}
 	}
 
-	// exifJSON["exiftool"] = datas
-	// jsonExif, err := json.Marshal(exifJSON)
-	// assert(err)
-
 	return datas
 }
 
 // ParseSsdeepOutput convert ssdeep output into JSON
 func ParseSsdeepOutput(ssdout string) string {
 
-	// datas := make(map[string]string, 1)
 	// Break output into lines
 	lines := strings.Split(ssdout, "\n")
 	// Break second line into hash and path
 	hashAndPath := strings.Split(lines[1], ",")
-	// Add hash to map
-	// datas["ssdeep"] = strings.TrimSpace(hashAndPath[0])
-	//
-	// jsonSsdeep, err := json.Marshal(datas)
-	// assert(err)
 
 	return strings.TrimSpace(hashAndPath[0])
 }
@@ -92,7 +81,6 @@ func ParseSsdeepOutput(ssdout string) string {
 func ParseTRiDOutput(tridout string) []string {
 
 	keepLines := []string{}
-	// datas := make(map[string][]string, 1)
 
 	lines := strings.Split(tridout, "\n")
 	lines = lines[6:]
@@ -103,10 +91,6 @@ func ParseTRiDOutput(tridout string) []string {
 			keepLines = append(keepLines, strings.TrimSpace(line))
 		}
 	}
-
-	// datas["trid"] = keepLines
-	// j, err := json.Marshal(datas)
-	// assert(err)
 
 	return keepLines
 }
@@ -129,7 +113,4 @@ func main() {
 	assert(err)
 
 	fmt.Println(string(fileInfoJSON))
-	// fmt.Println(string(ssdeepJSON))
-	// fmt.Println(string(tridJSON))
-	// fmt.Println(string(exiftoolJSON))
 }
