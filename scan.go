@@ -83,13 +83,21 @@ func ParseSsdeepOutput(ssdout string) []byte {
 
 // ParseTRiDOutput convert trid output into JSON
 func ParseTRiDOutput(tridout string) []byte {
+
+	keepLines := []string{}
+	datas := make(map[string][]string, 1)
+
 	lines := strings.Split(tridout, "\n")
 	lines = lines[5:]
-
 	// fmt.Println(lines)
 
-	datas := make(map[string][]string, 1)
-	datas["trid"] = lines
+	for _, line := range lines {
+		if len(line) != 0 {
+			keepLines = append(keepLines, line)
+		}
+	}
+
+	datas["trid"] = keepLines
 	j, err := json.Marshal(datas)
 	assert(err)
 
