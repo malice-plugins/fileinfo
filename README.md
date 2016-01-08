@@ -33,15 +33,11 @@ This will output to stdout and POST to malice results API webhook endpoint.
 ### Output
 ```json
 {
-  "ssdeep": "768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0"
-}
-{
+  "ssdeep": "768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0",
   "trid": [
     "50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)",
     "49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)"
-  ]
-}
-{
+  ],
   "exiftool": {
     "CPU Architecture": "64 bit",
     "CPU Byte Order": "Little endian",
