@@ -39,7 +39,7 @@ RUN buildDeps='ca-certificates \
   && cd /go/src/github.com/maliceio/malice-fileinfo \
   && export GOPATH=/go \
   && go get \
-  && go build -ldflags "-X main.Version $(cat VERSION)" -o /bin/info \
+  && go build -ldflags "-X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \

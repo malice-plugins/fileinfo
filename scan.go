@@ -9,7 +9,11 @@ import (
 	"strings"
 )
 
+// Version stores the plugin's version
 var Version string
+
+// BuildTime stores the plugin's build time
+var BuildTime string
 
 // FileInfo json object
 type FileInfo struct {
@@ -97,7 +101,7 @@ func ParseTRiDOutput(tridout string) []string {
 	// fmt.Println(lines)
 
 	for _, line := range lines {
-		if len(line) != 0 {
+		if len(strings.TrimSpace(line)) != 0 {
 			keepLines = append(keepLines, strings.TrimSpace(line))
 		}
 	}
@@ -112,7 +116,8 @@ func main() {
 		os.Exit(2)
 	}
 	if len(os.Args) == 2 && os.Args[1] == "--version" {
-		fmt.Println(Version)
+		fmt.Println("Version: ", Version)
+		fmt.Println("BuildTime: ", BuildTime)
 		os.Exit(0)
 	}
 
