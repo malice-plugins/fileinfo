@@ -30,7 +30,7 @@ $ docker run -v /path/to/file:/malware malice/fileinfo FILE
 ```
 This will output to stdout and POST to malice results API webhook endpoint.
 
-### Output
+### Output JSON:
 ```json
 {
   "ssdeep": "768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0",
@@ -51,6 +51,25 @@ This will output to stdout and POST to malice results API webhook endpoint.
   }
 }
 ```
+### Output STDOUT (Markdown Table):
+
+#### SSDeep
+768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
+#### Exiftool
+| Field                   | Value                    |
+| ----------------------- | ------------------------ |
+| File Type               | ELF executable           |
+| CPU Architecture        | 64 bit                   |
+| CPU Type                | AMD x86-64               |
+| File Size               | 51 kB                    |
+| ExifTool Version Number | 10.09                    |
+| File Type Extension     |                          |
+| MIME Type               | application/octet-stream |
+| CPU Byte Order          | Little endian            |
+| Object File Type        | Executable file          |
+#### TRiD
+ -  50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
+ -  49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
 
 ### To Run on OSX
  - Install [Homebrew](http://brew.sh)

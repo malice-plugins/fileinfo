@@ -7,6 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
+
+	"github.com/codegangsta/cli"
+	"github.com/crackcomm/go-clitable"
+	"github.com/parnurzeal/gorequest"
 )
 
 // Version stores the plugin's version
@@ -109,32 +114,140 @@ func ParseTRiDOutput(tridout string) []string {
 	return keepLines
 }
 
+func printStatus(resp gorequest.Response, body string, errs []error) {
+	fmt.Println(resp.Status)
+}
+
+func printMarkDownTable(finfo FileInfo) {
+
+	// print ssdeep
+	fmt.Println("#### SSDeep")
+	fmt.Println(finfo.SSDeep)
+	// print exiftool
+	fmt.Println("#### Exiftool")
+	table := clitable.New([]string{"Field", "Value"})
+	for key, value := range finfo.Exiftool {
+		table.AddRow(map[string]interface{}{"Field": key, "Value": value})
+	}
+	table.Markdown = true
+	table.Print()
+	// print trid
+	fmt.Println("#### TRiD")
+	table = clitable.New([]string{"TRiD", ""})
+	for _, trd := range finfo.TRiD {
+		fmt.Println(" - ", trd)
+	}
+}
+
+// AppHelpTemplate custom app help template
+var AppHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
+
+{{.Usage}}
+
+Version: {{.Version}}{{if or .Author .Email}}
+BuildTime: {{.BuildTime}}
+
+Author:{{if .Author}}
+  {{.Author}}{{if .Email}} - <{{.Email}}>{{end}}{{else}}
+  {{.Email}}{{end}}{{end}}
+{{if .Flags}}
+Options:
+  {{range .Flags}}{{.}}
+  {{end}}{{end}}
+Commands:
+  {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
+  {{end}}
+Run '{{.Name}} COMMAND --help' for more information on a command.
+`
+
 func main() {
-
-	if len(os.Args) < 2 {
-		fmt.Println("[ERROR] Missing input file.")
-		os.Exit(2)
+	cli.AppHelpTemplate = AppHelpTemplate
+	app := cli.NewApp()
+	app.Name = "fileinfo"
+	app.Author = "blacktop"
+	app.Email = "https://github.com/blacktop"
+	app.Version = Version
+	app.Compiled = time.Now()
+	app.Usage = "Malice File Info Plugin - ssdeep/exiftool/TRiD"
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "table, t",
+			Usage: "output as Markdown table",
+		},
 	}
-	if len(os.Args) == 2 && os.Args[1] == "--version" {
-		fmt.Println("Version: ", Version)
-		fmt.Println("BuildTime: ", BuildTime)
-		os.Exit(0)
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:   "post, p",
+			Usage:  "POST results to Malice webhook",
+			EnvVar: "MALICE_ENDPOINT",
+		},
+	}
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:   "proxy, x",
+			Usage:  "proxy settings for Malice webhook endpoint",
+			EnvVar: "MALICE_PROXY",
+		},
+	}
+	app.Action = func(c *cli.Context) {
+		path := c.Args().First()
+
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			assert(err)
+		}
+
+		fileInfo := FileInfo{
+			SSDeep:   ParseSsdeepOutput(RunCommand("ssdeep", path)),
+			TRiD:     ParseTRiDOutput(RunCommand("trid", path)),
+			Exiftool: ParseExiftoolOutput(RunCommand("exiftool", path)),
+		}
+
+		if c.Bool("table") {
+			printMarkDownTable(fileInfo)
+		} else {
+			fileInfoJSON, err := json.Marshal(fileInfo)
+			assert(err)
+			if c.Bool("post") {
+				request := gorequest.New()
+				if c.Bool("proxy") {
+					request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
+				}
+				request.Post(os.Getenv("MALICE_ENDPOINT")).
+					Set("Task", path).
+					Send(fileInfoJSON).
+					End(printStatus)
+			}
+			fmt.Println(string(fileInfoJSON))
+		}
 	}
 
-	path := os.Args[1]
+	app.Run(os.Args)
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		assert(err)
-	}
+	// if len(os.Args) < 2 {
+	// 	fmt.Println("[ERROR] Missing input file.")
+	// 	os.Exit(2)
+	// }
+	// if len(os.Args) == 2 && os.Args[1] == "--version" {
+	// 	fmt.Println("Version: ", Version)
+	// 	fmt.Println("BuildTime: ", BuildTime)
+	// 	os.Exit(0)
+	// }
 
-	fileInfo := FileInfo{
-		SSDeep:   ParseSsdeepOutput(RunCommand("ssdeep", path)),
-		TRiD:     ParseTRiDOutput(RunCommand("trid", path)),
-		Exiftool: ParseExiftoolOutput(RunCommand("exiftool", path)),
-	}
-
-	fileInfoJSON, err := json.Marshal(fileInfo)
-	assert(err)
-
-	fmt.Println(string(fileInfoJSON))
+	// path := os.Args[1]
+	//
+	// if _, err := os.Stat(path); os.IsNotExist(err) {
+	// 	assert(err)
+	// }
+	//
+	// fileInfo := FileInfo{
+	// 	SSDeep:   ParseSsdeepOutput(RunCommand("ssdeep", path)),
+	// 	TRiD:     ParseTRiDOutput(RunCommand("trid", path)),
+	// 	Exiftool: ParseExiftoolOutput(RunCommand("exiftool", path)),
+	// }
+	//
+	// fileInfoJSON, err := json.Marshal(fileInfo)
+	// assert(err)
+	//
+	// fmt.Println(string(fileInfoJSON))
+	// printMarkDownTable(fileInfo)
 }
