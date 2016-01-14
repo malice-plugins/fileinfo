@@ -139,8 +139,7 @@ func printMarkDownTable(finfo FileInfo) {
 	}
 }
 
-// AppHelpTemplate custom app help template
-var AppHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
+var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
 
 {{.Usage}}
 
@@ -161,7 +160,7 @@ Run '{{.Name}} COMMAND --help' for more information on a command.
 `
 
 func main() {
-	cli.AppHelpTemplate = AppHelpTemplate
+	cli.AppHelpTemplate = appHelpTemplate
 	app := cli.NewApp()
 	app.Name = "fileinfo"
 	app.Author = "blacktop"
@@ -186,6 +185,9 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
+		if len(c.Args()) < 1 {
+			cli.ShowAppHelp(c)
+		}
 		path := c.Args().First()
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -217,33 +219,6 @@ func main() {
 		}
 	}
 
-	app.Run(os.Args)
-
-	// if len(os.Args) < 2 {
-	// 	fmt.Println("[ERROR] Missing input file.")
-	// 	os.Exit(2)
-	// }
-	// if len(os.Args) == 2 && os.Args[1] == "--version" {
-	// 	fmt.Println("Version: ", Version)
-	// 	fmt.Println("BuildTime: ", BuildTime)
-	// 	os.Exit(0)
-	// }
-
-	// path := os.Args[1]
-	//
-	// if _, err := os.Stat(path); os.IsNotExist(err) {
-	// 	assert(err)
-	// }
-	//
-	// fileInfo := FileInfo{
-	// 	SSDeep:   ParseSsdeepOutput(RunCommand("ssdeep", path)),
-	// 	TRiD:     ParseTRiDOutput(RunCommand("trid", path)),
-	// 	Exiftool: ParseExiftoolOutput(RunCommand("exiftool", path)),
-	// }
-	//
-	// fileInfoJSON, err := json.Marshal(fileInfo)
-	// assert(err)
-	//
-	// fmt.Println(string(fileInfoJSON))
-	// printMarkDownTable(fileInfo)
+	err := app.Run(os.Args)
+	assert(err)
 }

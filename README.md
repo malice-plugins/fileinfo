@@ -26,11 +26,34 @@ $ docker build -t malice/fileinfo github.com/maliceio/malice-fileinfo
 ```
 ### Usage
 ```bash
-$ docker run -v /path/to/file:/malware malice/fileinfo FILE
+$ docker run -v /path/to/file:/malware malice/fileinfo help
+
+Usage: fileinfo [OPTIONS] COMMAND [arg...]
+
+Malice File Info Plugin - ssdeep/exiftool/TRiD
+
+Version: v0.1.0
+Compiled: 2016-01-14 00:00:00 +0000 UTC
+
+Author:
+  blacktop - <https://github.com/blacktop>
+
+Options:
+  --table, -t	output as Markdown table
+  --post, -p	POST results to Malice webhook [$MALICE_ENDPOINT]
+  --proxy, -x	proxy settings for Malice webhook endpoint [$MALICE_PROXY]
+  --help, -h	show help
+  --version, -v	print the version
+
+Commands:
+  help	Shows a list of commands or help for one command
+
+Run 'fileinfo COMMAND --help' for more information on a command.
 ```
+
 This will output to stdout and POST to malice results API webhook endpoint.
 
-### Output JSON:
+### Sample Output JSON:
 ```json
 {
   "ssdeep": "768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0",
@@ -51,7 +74,7 @@ This will output to stdout and POST to malice results API webhook endpoint.
   }
 }
 ```
-### Output STDOUT (Markdown Table):
+### Sample Output STDOUT (Markdown Table):
 ---
 #### SSDeep
 768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
