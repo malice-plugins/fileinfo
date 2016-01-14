@@ -144,7 +144,6 @@ var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [a
 {{.Usage}}
 
 Version: {{.Version}}{{if or .Author .Email}}
-Compiled: {{.Compiled}}
 
 Author:{{if .Author}}
   {{.Author}}{{if .Email}} - <{{.Email}}>{{end}}{{else}}
@@ -165,7 +164,7 @@ func main() {
 	app.Name = "fileinfo"
 	app.Author = "blacktop"
 	app.Email = "https://github.com/blacktop"
-	app.Version = Version
+	app.Version = Version + ", BuildTime: " + BuildTime
 	app.Compiled, _ = time.Parse("20060102", BuildTime)
 	app.Usage = "Malice File Info Plugin - ssdeep/exiftool/TRiD"
 	app.Flags = []cli.Flag{

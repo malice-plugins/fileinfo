@@ -50,3 +50,5 @@ VOLUME ["/malware"]
 WORKDIR /malware
 
 ENTRYPOINT ["/bin/info"]
+
+CMD ["--help"]
