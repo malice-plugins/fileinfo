@@ -77,6 +77,11 @@ This will output to stdout and POST to malice results API webhook endpoint.
 ---
 #### SSDeep
 768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
+
+#### TRiD
+ -  50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
+ -  49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
+
 #### Exiftool
 | Field                   | Value                    |
 | ----------------------- | ------------------------ |
@@ -89,10 +94,6 @@ This will output to stdout and POST to malice results API webhook endpoint.
 | MIME Type               | application/octet-stream |
 | CPU Byte Order          | Little endian            |
 | Object File Type        | Executable file          |
-#### TRiD
- -  50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
- -  49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
-
 ---
 ### To Run on OSX
  - Install [Homebrew](http://brew.sh)
