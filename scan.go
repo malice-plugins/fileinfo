@@ -184,9 +184,9 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
-		if len(c.Args()) < 1 {
-			cli.ShowAppHelp(c)
-		}
+		// if len(c.Args()) < 1 {
+		// 	cli.ShowAppHelp(c)
+		// }
 		path := c.Args().First()
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
