@@ -167,7 +167,7 @@ func main() {
 	app.Author = "blacktop"
 	app.Email = "https://github.com/blacktop"
 	app.Version = Version
-	app.Compiled = time.Now()
+	app.Compiled, _ = time.Parse("20060102", BuildTime)
 	app.Usage = "Malice File Info Plugin - ssdeep/exiftool/TRiD"
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
