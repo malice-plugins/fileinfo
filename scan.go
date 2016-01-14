@@ -145,7 +145,7 @@ var AppHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [a
 {{.Usage}}
 
 Version: {{.Version}}{{if or .Author .Email}}
-BuildTime: {{.BuildTime}}
+Compiled: {{.Compiled}}
 
 Author:{{if .Author}}
   {{.Author}}{{if .Email}} - <{{.Email}}>{{end}}{{else}}
