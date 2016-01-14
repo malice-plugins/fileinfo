@@ -26,14 +26,13 @@ $ docker build -t malice/fileinfo github.com/maliceio/malice-fileinfo
 ```
 ### Usage
 ```bash
-$ docker run -v /path/to/file:/malware malice/fileinfo help
+$ docker run -v /path/to/file:/malware malice/fileinfo
 
 Usage: fileinfo [OPTIONS] COMMAND [arg...]
 
 Malice File Info Plugin - ssdeep/exiftool/TRiD
 
-Version: v0.1.0
-Compiled: 2016-01-14 00:00:00 +0000 UTC
+Version: v0.1.0, BuildTime: 20160114
 
 Author:
   blacktop - <https://github.com/blacktop>
