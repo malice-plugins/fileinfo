@@ -123,6 +123,12 @@ func printMarkDownTable(finfo FileInfo) {
 	// print ssdeep
 	fmt.Println("#### SSDeep")
 	fmt.Println(finfo.SSDeep)
+	// print trid
+	fmt.Println("#### TRiD")
+	table = clitable.New([]string{"TRiD", ""})
+	for _, trd := range finfo.TRiD {
+		fmt.Println(" - ", trd)
+	}
 	// print exiftool
 	fmt.Println("#### Exiftool")
 	table := clitable.New([]string{"Field", "Value"})
@@ -131,12 +137,6 @@ func printMarkDownTable(finfo FileInfo) {
 	}
 	table.Markdown = true
 	table.Print()
-	// print trid
-	fmt.Println("#### TRiD")
-	table = clitable.New([]string{"TRiD", ""})
-	for _, trd := range finfo.TRiD {
-		fmt.Println(" - ", trd)
-	}
 }
 
 var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
