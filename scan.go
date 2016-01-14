@@ -123,12 +123,14 @@ func printMarkDownTable(finfo FileInfo) {
 	// print ssdeep
 	fmt.Println("#### SSDeep")
 	fmt.Println(finfo.SSDeep)
+	fmt.Println()
 	// print trid
 	fmt.Println("#### TRiD")
 	table := clitable.New([]string{"TRiD", ""})
 	for _, trd := range finfo.TRiD {
 		fmt.Println(" - ", trd)
 	}
+	fmt.Println()
 	// print exiftool
 	fmt.Println("#### Exiftool")
 	table = clitable.New([]string{"Field", "Value"})
