@@ -30,7 +30,7 @@ $ docker run -v /path/to/file:/malware malice/fileinfo
 
 Usage: fileinfo [OPTIONS] COMMAND [arg...]
 
-Malice File Info Plugin - ssdeep/exiftool/TRiD
+Malice File Info Plugin - ssdeep/TRiD/exiftool
 
 Version: v0.1.0, BuildTime: 20160114
 
