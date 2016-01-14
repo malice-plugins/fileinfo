@@ -174,15 +174,11 @@ func main() {
 			Name:  "table, t",
 			Usage: "output as Markdown table",
 		},
-	}
-	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:   "post, p",
 			Usage:  "POST results to Malice webhook",
 			EnvVar: "MALICE_ENDPOINT",
 		},
-	}
-	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:   "proxy, x",
 			Usage:  "proxy settings for Malice webhook endpoint",
