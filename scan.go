@@ -54,7 +54,9 @@ func stringInSlice(a string, list []string) bool {
 func RunCommand(cmd string, path string) string {
 
 	cmdOut, err := exec.Command(cmd, path).Output()
-	assert(err)
+	if len(cmdOut) == 0 {
+		assert(err)
+	}
 
 	return string(cmdOut)
 }
@@ -186,9 +188,6 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
-		// if len(c.Args()) < 1 {
-		// 	cli.ShowAppHelp(c)
-		// }
 		path := c.Args().First()
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
