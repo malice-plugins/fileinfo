@@ -26,7 +26,7 @@ $ docker build -t malice/fileinfo github.com/maliceio/malice-fileinfo
 ```
 ### Usage
 ```bash
-$ docker run -v /path/to/file:/malware malice/fileinfo
+$ docker run -v /path/to/malware:/malware malice/fileinfo FILE
 
 Usage: fileinfo [OPTIONS] COMMAND [arg...]
 
