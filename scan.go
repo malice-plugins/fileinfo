@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/codegangsta/cli"
 	"github.com/crackcomm/go-clitable"
 	"github.com/parnurzeal/gorequest"
+	"github.com/urfave/cli"
 )
 
 // Version stores the plugin's version
@@ -187,7 +187,7 @@ func main() {
 			EnvVar: "MALICE_PROXY",
 		},
 	}
-	app.Action = func(c *cli.Context) {
+	app.Action = func(c *cli.Context) error {
 		path := c.Args().First()
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -217,6 +217,7 @@ func main() {
 			}
 			fmt.Println(string(fileInfoJSON))
 		}
+		return nil
 	}
 
 	err := app.Run(os.Args)

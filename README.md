@@ -1,10 +1,7 @@
-# malice-fileinfo
+malice-fileinfo
+===============
 
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
-[![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)][hub]
-[![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)][hub]
-[![Image Size](https://img.shields.io/imagelayers/image-size/malice/fileinfo/latest.svg)](https://imagelayers.io/?images=malice/fileinfo:latest)
-[![Image Layers](https://img.shields.io/imagelayers/layers/malice/fileinfo/latest.svg)](https://imagelayers.io/?images=malice/fileinfo:latest)
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)[![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/)[![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/)
 
 Malice File Info Plugin
 
@@ -12,19 +9,22 @@ This repository contains a **Dockerfile** of the **Malice File Info Plugin** for
 
 ### Dependencies
 
-* [debian:wheezy (*85 MB*)](https://index.docker.io/_/debian/)
+-	[debian:wheezy (*85 MB*\)](https://index.docker.io/_/debian/)
 
 ### Installation
 
-1. Install [Docker](https://www.docker.io/).
+1.	Install [Docker](https://www.docker.io/).
 
-2. Download [trusted build](https://index.docker.io/u/malice/fileinfo/) from public [Docker Registry](https://index.docker.io/): `docker pull malice/fileinfo`
+2.	Download [trusted build](https://index.docker.io/u/malice/fileinfo/) from public [Docker Registry](https://index.docker.io/): `docker pull malice/fileinfo`
 
 #### Alternatively, build an image from Dockerfile
+
 ```bash
 $ docker build -t malice/fileinfo github.com/maliceio/malice-fileinfo
 ```
+
 ### Usage
+
 ```bash
 $ docker run -v /path/to/malware:/malware malice/fileinfo FILE
 
@@ -53,6 +53,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 This will output to stdout and POST to malice results API webhook endpoint.
 
 ### Sample Output JSON:
+
 ```json
 {
   "ssdeep": "768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0",
@@ -73,18 +74,24 @@ This will output to stdout and POST to malice results API webhook endpoint.
   }
 }
 ```
+
 ### Sample Output STDOUT (Markdown Table):
+
 ---
+
 #### SSDeep
+
 768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
 
 #### TRiD
- -  50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
- -  49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
+
+-	50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
+-	49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
 
 #### Exiftool
+
 | Field                   | Value                    |
-| ----------------------- | ------------------------ |
+|-------------------------|--------------------------|
 | File Type               | ELF executable           |
 | CPU Architecture        | 64 bit                   |
 | CPU Type                | AMD x86-64               |
@@ -94,9 +101,12 @@ This will output to stdout and POST to malice results API webhook endpoint.
 | MIME Type               | application/octet-stream |
 | CPU Byte Order          | Little endian            |
 | Object File Type        | Executable file          |
+
 ---
+
 ### To Run on OSX
- - Install [Homebrew](http://brew.sh)
+
+-	Install [Homebrew](http://brew.sh)
 
 ```bash
 $ brew install caskroom/cask/brew-cask
@@ -116,6 +126,5 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 ### Credits
 
 ### License
-MIT Copyright (c) 2016 **blacktop**
 
-[hub]: https://hub.docker.com/r/malice/fileinfo/
+MIT Copyright (c) 2016 **blacktop**
