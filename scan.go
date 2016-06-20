@@ -1,17 +1,20 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/crackcomm/go-clitable"
 	"github.com/parnurzeal/gorequest"
 	"github.com/urfave/cli"
+	r "gopkg.in/dancannon/gorethink.v2"
 )
 
 // Version stores the plugin's version
@@ -20,11 +23,16 @@ var Version string
 // BuildTime stores the plugin's build time
 var BuildTime string
 
+type pluginResults struct {
+	ID       string   `gorethink:"id"`
+	FileInfo FileInfo `gorethink:"fileinfo"`
+}
+
 // FileInfo json object
 type FileInfo struct {
-	SSDeep   string            `json:"ssdeep"`
-	TRiD     []string          `json:"trid"`
-	Exiftool map[string]string `json:"exiftool"`
+	SSDeep   string            `json:"ssdeep" gorethink:"ssdeep"`
+	TRiD     []string          `json:"trid" gorethink:"trid"`
+	Exiftool map[string]string `json:"exiftool" gorethink:"exiftool"`
 }
 
 func getopt(name, dfault string) string {
@@ -48,6 +56,19 @@ func stringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// getSHA256 calculates a file's sha256sum
+func getSHA256(name string) string {
+
+	dat, err := ioutil.ReadFile(name)
+	assert(err)
+
+	h256 := sha256.New()
+	_, err = h256.Write(dat)
+	assert(err)
+
+	return fmt.Sprintf("%x", h256.Sum(nil))
 }
 
 // RunCommand runs cmd on file
@@ -143,6 +164,25 @@ func printMarkDownTable(finfo FileInfo) {
 	table.Print()
 }
 
+// writeToDatabase upserts plugin results into Database
+func writeToDatabase(results pluginResults) {
+
+	address := fmt.Sprintf("%s:28015", getopt("MALICE_RETHINKDB", "rethink"))
+
+	// connect to RethinkDB
+	session, err := r.Connect(r.ConnectOpts{
+		Address:  address,
+		Timeout:  5 * time.Second,
+		Database: "malice",
+	})
+	if err == nil {
+		// upsert into RethinkDB
+		resp, err := r.Table("samples").Insert(results, r.InsertOpts{Conflict: "replace"}).RunWrite(session)
+		assert(err)
+		log.Debug(resp)
+	}
+}
+
 var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
 
 {{.Usage}}
@@ -171,6 +211,7 @@ func main() {
 	app.Version = Version + ", BuildTime: " + BuildTime
 	app.Compiled, _ = time.Parse("20060102", BuildTime)
 	app.Usage = "Malice File Info Plugin - ssdeep/exiftool/TRiD"
+	var rethinkdb string
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:  "table, t",
@@ -186,6 +227,13 @@ func main() {
 			Usage:  "proxy settings for Malice webhook endpoint",
 			EnvVar: "MALICE_PROXY",
 		},
+		cli.StringFlag{
+			Name:        "rethinkdb",
+			Value:       "",
+			Usage:       "rethinkdb address for Malice to store results",
+			EnvVar:      "MALICE_RETHINKDB",
+			Destination: &rethinkdb,
+		},
 	}
 	app.Action = func(c *cli.Context) error {
 		path := c.Args().First()
@@ -193,6 +241,8 @@ func main() {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			assert(err)
 		}
+
+		id := getSHA256(path)
 
 		fileInfo := FileInfo{
 			SSDeep:   ParseSsdeepOutput(RunCommand("ssdeep", path)),
@@ -203,6 +253,7 @@ func main() {
 		if c.Bool("table") {
 			printMarkDownTable(fileInfo)
 		} else {
+
 			fileInfoJSON, err := json.Marshal(fileInfo)
 			assert(err)
 			if c.Bool("post") {
@@ -215,6 +266,9 @@ func main() {
 					Send(fileInfoJSON).
 					End(printStatus)
 			}
+			// upsert into Database
+			writeToDatabase(pluginResults{ID: id, FileInfo: fileInfo})
+			// write to stdout
 			fmt.Println(string(fileInfoJSON))
 		}
 		return nil
