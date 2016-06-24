@@ -23,6 +23,11 @@ var Version string
 // BuildTime stores the plugin's build time
 var BuildTime string
 
+const (
+	name     = "fileinfo"
+	category = "metadata"
+)
+
 type pluginResults struct {
 	ID       string   `gorethink:"id"`
 	FileInfo FileInfo `gorethink:"fileinfo"`
@@ -167,19 +172,37 @@ func printMarkDownTable(finfo FileInfo) {
 // writeToDatabase upserts plugin results into Database
 func writeToDatabase(results pluginResults) {
 
-	address := fmt.Sprintf("%s:28015", getopt("MALICE_RETHINKDB", "rethink"))
-
 	// connect to RethinkDB
 	session, err := r.Connect(r.ConnectOpts{
-		Address:  address,
+		Address:  fmt.Sprintf("%s:28015", getopt("MALICE_RETHINKDB", "rethink")),
 		Timeout:  5 * time.Second,
 		Database: "malice",
 	})
 	if err == nil {
-		// upsert into RethinkDB
-		resp, err := r.Table("samples").Insert(results, r.InsertOpts{Conflict: "replace"}).RunWrite(session)
+		res, err := r.Table("samples").Get(results.ID).Run(session)
 		assert(err)
-		log.Debug(resp)
+		defer res.Close()
+
+		if res.IsNil() {
+			// upsert into RethinkDB
+			resp, err := r.Table("samples").Insert(results, r.InsertOpts{Conflict: "replace"}).RunWrite(session)
+			assert(err)
+			log.Debug(resp)
+		} else {
+			resp, err := r.Table("samples").Get(results.ID).Update(map[string]interface{}{
+				"plugins": map[string]interface{}{
+					category: map[string]interface{}{
+						name: results.FileInfo,
+					},
+				},
+			}).RunWrite(session)
+			assert(err)
+
+			log.Debug(resp)
+		}
+
+	} else {
+		log.Debug(err)
 	}
 }
 
@@ -214,6 +237,10 @@ func main() {
 	var rethinkdb string
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
+			Name:  "verbose, V",
+			Usage: "verbose output",
+		},
+		cli.BoolFlag{
 			Name:  "table, t",
 			Usage: "output as Markdown table",
 		},
@@ -240,6 +267,10 @@ func main() {
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			assert(err)
+		}
+
+		if c.Bool("verbose") {
+			log.SetLevel(log.DebugLevel)
 		}
 
 		id := getSHA256(path)
