@@ -273,18 +273,18 @@ func main() {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		id := getSHA256(path)
-
 		fileInfo := FileInfo{
 			SSDeep:   ParseSsdeepOutput(RunCommand("ssdeep", path)),
 			TRiD:     ParseTRiDOutput(RunCommand("trid", path)),
 			Exiftool: ParseExiftoolOutput(RunCommand("exiftool", path)),
 		}
 
+		// upsert into Database
+		writeToDatabase(pluginResults{ID: getSHA256(path), FileInfo: fileInfo})
+
 		if c.Bool("table") {
 			printMarkDownTable(fileInfo)
 		} else {
-
 			fileInfoJSON, err := json.Marshal(fileInfo)
 			assert(err)
 			if c.Bool("post") {
@@ -297,8 +297,6 @@ func main() {
 					Send(fileInfoJSON).
 					End(printStatus)
 			}
-			// upsert into Database
-			writeToDatabase(pluginResults{ID: id, FileInfo: fileInfo})
 			// write to stdout
 			fmt.Println(string(fileInfoJSON))
 		}
