@@ -273,6 +273,8 @@ func main() {
 
 		if c.Bool("verbose") {
 			log.SetLevel(log.DebugLevel)
+		} else {
+			r.Log.Out = ioutil.Discard
 		}
 
 		fileInfo := FileInfo{
@@ -282,7 +284,10 @@ func main() {
 		}
 
 		// upsert into Database
-		writeToDatabase(pluginResults{ID: getSHA256(path), FileInfo: fileInfo})
+		writeToDatabase(pluginResults{
+			ID:       getopt("MALICE_SCANID", getSHA256(path)),
+			FileInfo: fileInfo,
+		})
 
 		if c.Bool("table") {
 			printMarkDownTable(fileInfo)
