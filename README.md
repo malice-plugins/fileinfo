@@ -1,11 +1,11 @@
 malice-fileinfo
 ===============
 
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/)
+[![Circle CI](https://circleci.com/gh/maliceio/malice-fileinfo.png?style=shield)](https://circleci.com/gh/maliceio/malice-fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker image-21.26 MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
 
-Malice File Info Plugin
+Malice File Info Plugin (exiftool, TRiD and ssdeep)
 
-This repository contains a **Dockerfile** of the **Malice File Info Plugin** for [Docker](https://www.docker.io/)'s [trusted build](https://index.docker.io/u/malice/fileinfo/) published to the public [Docker Registry](https://index.docker.io/).
+This repository contains a **Dockerfile** of the FileInfo malice plugin **malice/fileinfo**.
 
 ### Dependencies
 
@@ -14,14 +14,7 @@ This repository contains a **Dockerfile** of the **Malice File Info Plugin** for
 ### Installation
 
 1.	Install [Docker](https://www.docker.io/).
-
 2.	Download [trusted build](https://index.docker.io/u/malice/fileinfo/) from public [Docker Registry](https://index.docker.io/): `docker pull malice/fileinfo`
-
-#### Alternatively, build an image from Dockerfile
-
-```bash
-$ docker build -t malice/fileinfo github.com/maliceio/malice-fileinfo
-```
 
 ### Usage
 
@@ -103,19 +96,6 @@ This will output to stdout and POST to malice results API webhook endpoint.
 | Object File Type        | Executable file          |
 
 ---
-
-### To Run on OSX
-
--	Install [Homebrew](http://brew.sh)
-
-```bash
-$ brew install caskroom/cask/brew-cask
-$ brew cask install virtualbox
-$ brew install docker
-$ brew install docker-machine
-$ docker-machine create --driver virtualbox malice
-$ eval $(docker-machine env malice)
-```
 
 ### Documentation
 
