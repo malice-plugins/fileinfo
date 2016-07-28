@@ -37,7 +37,7 @@ RUN set -x \
 	&& chmod +x /usr/local/bin/tini \
 	&& tini -h \
   && echo "Clean up unnecessary files..." \
-  && apt-get purge -y --auto-remove ca-certificates openssl gnupg wget \
+  && apt-get purge -y --force-yes --auto-remove ca-certificates openssl gnupg wget \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
