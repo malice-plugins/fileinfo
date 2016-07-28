@@ -11,6 +11,36 @@ ENV DBASE_URL releases.hashicorp.com/docker-base
 # the rest of this may change over time.
 RUN groupadd -r malice && useradd -r -g malice malice
 
+ENV GOSU_VERSION 1.7
+ENV GOSU_URL https://github.com/tianon/gosu/releases/download
+ENV TINI_VERSION v0.9.0
+
+RUN set -x \
+  && apt-get update -qq \
+  && apt-get install -y ca-certificates wget \
+  && echo "Grab gosu for easy step-down from root..." \
+	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+	&& chmod +x /usr/local/bin/gosu \
+	&& gosu nobody true \
+  && echo "Grab tini for signal processing and zombie killing..." \
+	&& wget -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" \
+	&& wget -O /usr/local/bin/tini.asc "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini.asc" \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 6380DC428747F6C393FEACA59A84159D7001A4E5 \
+	&& gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini \
+	&& rm -r "$GNUPGHOME" /usr/local/bin/tini.asc \
+	&& chmod +x /usr/local/bin/tini \
+	&& tini -h \
+  && echo "Clean up unnecessary files..." \
+  && apt-get purge -y --auto-remove $buildDeps \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 ENV SSDEEP ssdeep-2.13
 
 COPY . /go/src/github.com/maliceio/malice-fileinfo
@@ -28,17 +58,6 @@ RUN buildDeps='ca-certificates \
   && apt-get update -qq \
   && apt-get install -t testing libc6 \
   && apt-get install -yq $buildDeps libimage-exiftool-perl --no-install-recommends \
-  && echo "Install hashicorp/docker-base..." \
-  && gpg --recv-keys 91A6E7F85D05C65630BEF18951852D87348FFC4C \
-  && mkdir -p /tmp/build \
-  && cd /tmp/build \
-  && wget https://${DBASE_URL}/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip \
-  && wget https://${DBASE_URL}/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS \
-  && wget https://${DBASE_URL}/${DOCKER_BASE_VERSION}/docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS.sig \
-  && gpg --batch --verify docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS.sig docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS \
-  && grep ${DOCKER_BASE_VERSION}_linux_amd64.zip docker-base_${DOCKER_BASE_VERSION}_SHA256SUMS | sha256sum -c \
-  && unzip docker-base_${DOCKER_BASE_VERSION}_linux_amd64.zip  \
-  && cp bin/gosu bin/dumb-init /bin \
   && mkdir /malware \
   && chown -R malice:malice /malware \
   && echo "Downloading TRiD and Database..." \
@@ -73,7 +92,7 @@ VOLUME ["/malware"]
 
 WORKDIR /malware
 
-# ENTRYPOINT ["docker-entrypoint.sh"]
-ENTRYPOINT ["/bin/info"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+# ENTRYPOINT ["/bin/info"]
 
 CMD ["--help"]
