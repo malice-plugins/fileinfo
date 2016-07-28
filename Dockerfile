@@ -17,7 +17,7 @@ ENV TINI_VERSION v0.9.0
 
 RUN set -x \
   && apt-get update -qq \
-  && apt-get install -y ca-certificates openssl gnupg wget \
+  && apt-get install -y ca-certificates wget \
   && echo "Grab gosu for easy step-down from root..." \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
@@ -37,7 +37,7 @@ RUN set -x \
 	&& chmod +x /usr/local/bin/tini \
 	&& tini -h \
   && echo "Clean up unnecessary files..." \
-  && apt-get purge -y --force-yes --auto-remove ca-certificates openssl gnupg wget \
+  && apt-get purge -y --auto-remove ca-certificates wget \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
