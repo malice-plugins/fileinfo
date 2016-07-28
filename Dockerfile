@@ -92,7 +92,7 @@ VOLUME ["/malware"]
 
 WORKDIR /malware
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-# ENTRYPOINT ["/bin/info"]
+# ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["gosu","malice","tini","info"]
 
 CMD ["--help"]
