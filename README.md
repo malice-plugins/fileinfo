@@ -30,16 +30,18 @@ Version: v0.1.0, BuildTime: 20160114
 Author:
   blacktop - <https://github.com/blacktop>
 
-Options:
-  --table, -t	output as Markdown table
-  --post, -p	POST results to Malice webhook [$MALICE_ENDPOINT]
-  --proxy, -x	proxy settings for Malice webhook endpoint [$MALICE_PROXY]
-  --help, -h	show help
-  --version, -v	print the version
-
-Commands:
-  help	Shows a list of commands or help for one command
-
+Options:                                                                                                                  
+  --verbose, -V         verbose output                                                                                    
+  --table, -t           output as Markdown table                                                                          
+  --post, -p            POST results to Malice webhook [$MALICE_ENDPOINT]                                                 
+  --proxy, -x           proxy settings for Malice webhook endpoint [$MALICE_PROXY]                                        
+  --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH]                         
+  --help, -h            show help                                                                                         
+  --version, -v         print the version                                                                                 
+                                                                                                                          
+Commands:                                                                                                                 
+  help  Shows a list of commands or help for one command                                                                  
+                                                                                                                          
 Run 'fileinfo COMMAND --help' for more information on a command.
 ```
 
@@ -102,8 +104,6 @@ This will output to stdout and POST to malice results API webhook endpoint.
 ### Issues
 
 Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-fileinfo/issues/new) and I'll get right on it.
-
-### Credits
 
 ### License
 
