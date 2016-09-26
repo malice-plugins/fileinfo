@@ -99,6 +99,14 @@ This will output to stdout and POST to malice results API webhook endpoint.
 
 ---
 
+### To write results to [ElasticSearch](https://www.elastic.co/products/elasticsearch)
+
+```bash
+$ docker volume create --name malice
+$ docker run -d -p 9200:9200 -v malice:/data --name elastic elasticsearch
+$ docker run --rm --link elastic malice/fileinfo FILE
+```
+
 ### Documentation
 
 ### Issues
