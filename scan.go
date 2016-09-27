@@ -58,7 +58,7 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 			continue
 		}
 		if !utils.StringInSlice(strings.TrimSpace(keyvalue[0]), ignoreTags) {
-			datas[strings.TrimSpace(keyvalue[0])] = strings.TrimSpace(keyvalue[1])
+			datas[strings.TrimSpace(utils.CamelCase(keyvalue[0]))] = strings.TrimSpace(keyvalue[1])
 		}
 	}
 
