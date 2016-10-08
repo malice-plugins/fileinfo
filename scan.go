@@ -51,7 +51,7 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 
 	lines := strings.Split(exifout, "\n")
 	if !(len(lines) > 1) {
-		return ""
+		return nil
 	}
 	datas := make(map[string]string, len(lines))
 
@@ -89,7 +89,7 @@ func ParseTRiDOutput(tridout string) []string {
 
 	lines := strings.Split(tridout, "\n")
 	if !(len(lines) > 1) {
-		return ""
+		return nil
 	}
 	lines = lines[6:]
 	// fmt.Println(lines)
