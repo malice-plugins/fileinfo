@@ -109,25 +109,32 @@ func printStatus(resp gorequest.Response, body string, errs []error) {
 
 func printMarkDownTable(finfo FileInfo) {
 
-	// print ssdeep
-	fmt.Println("#### SSDeep")
-	fmt.Println(finfo.SSDeep)
-	fmt.Println()
-	// print trid
-	fmt.Println("#### TRiD")
-	table := clitable.New([]string{"TRiD", ""})
-	for _, trd := range finfo.TRiD {
-		fmt.Println(" - ", trd)
+	if len(finfo.SSDeep) > 0 {
+		// print ssdeep
+		fmt.Println("#### SSDeep")
+		fmt.Println(finfo.SSDeep)
+		fmt.Println()
 	}
-	fmt.Println()
-	// print exiftool
-	fmt.Println("#### Exiftool")
-	table = clitable.New([]string{"Field", "Value"})
-	for key, value := range finfo.Exiftool {
-		table.AddRow(map[string]interface{}{"Field": key, "Value": value})
+
+	if finfo.TRiD != nil {
+		// print trid
+		fmt.Println("#### TRiD")
+		for _, trd := range finfo.TRiD {
+			fmt.Println(" - ", trd)
+		}
+		fmt.Println()
 	}
-	table.Markdown = true
-	table.Print()
+
+	if finfo.Exiftool != nil {
+		// print exiftool
+		fmt.Println("#### Exiftool")
+		table := clitable.New([]string{"Field", "Value"})
+		for key, value := range finfo.Exiftool {
+			table.AddRow(map[string]interface{}{"Field": key, "Value": value})
+		}
+		table.Markdown = true
+		table.Print()
+	}
 }
 
 var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
