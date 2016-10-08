@@ -50,10 +50,13 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 	}
 
 	lines := strings.Split(exifout, "\n")
+
 	log.Debugln("Exiftool lines: ", lines)
-	if !(len(lines) > 1) {
+
+	if utils.SliceContainsString("File not found", lines) {
 		return nil
 	}
+
 	datas := make(map[string]string, len(lines))
 
 	for _, line := range lines {
@@ -74,10 +77,13 @@ func ParseSsdeepOutput(ssdout string) string {
 
 	// Break output into lines
 	lines := strings.Split(ssdout, "\n")
+
 	log.Debugln("ssdeep lines: ", lines)
-	if !(len(lines) > 1) {
+
+	if utils.SliceContainsString("No such file or directory", lines) {
 		return ""
 	}
+
 	// Break second line into hash and path
 	hashAndPath := strings.Split(lines[1], ",")
 
@@ -90,12 +96,14 @@ func ParseTRiDOutput(tridout string) []string {
 	keepLines := []string{}
 
 	lines := strings.Split(tridout, "\n")
+
 	log.Debugln("TRiD lines: ", lines)
-	if !(len(lines) > 1) {
+
+	if utils.SliceContainsString("Error: found no file(s) to analyze!", lines) {
 		return nil
 	}
+
 	lines = lines[6:]
-	// fmt.Println(lines)
 
 	for _, line := range lines {
 		if len(strings.TrimSpace(line)) != 0 {
