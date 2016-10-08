@@ -50,6 +50,9 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 	}
 
 	lines := strings.Split(exifout, "\n")
+	if !(len(lines) > 1) {
+		return ""
+	}
 	datas := make(map[string]string, len(lines))
 
 	for _, line := range lines {
@@ -70,6 +73,9 @@ func ParseSsdeepOutput(ssdout string) string {
 
 	// Break output into lines
 	lines := strings.Split(ssdout, "\n")
+	if !(len(lines) > 1) {
+		return ""
+	}
 	// Break second line into hash and path
 	hashAndPath := strings.Split(lines[1], ",")
 
@@ -82,6 +88,9 @@ func ParseTRiDOutput(tridout string) []string {
 	keepLines := []string{}
 
 	lines := strings.Split(tridout, "\n")
+	if !(len(lines) > 1) {
+		return ""
+	}
 	lines = lines[6:]
 	// fmt.Println(lines)
 
