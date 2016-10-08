@@ -50,6 +50,7 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 	}
 
 	lines := strings.Split(exifout, "\n")
+	log.Debugln("Exiftool lines: ", lines)
 	if !(len(lines) > 1) {
 		return nil
 	}
@@ -73,6 +74,7 @@ func ParseSsdeepOutput(ssdout string) string {
 
 	// Break output into lines
 	lines := strings.Split(ssdout, "\n")
+	log.Debugln("ssdeep lines: ", lines)
 	if !(len(lines) > 1) {
 		return ""
 	}
@@ -88,6 +90,7 @@ func ParseTRiDOutput(tridout string) []string {
 	keepLines := []string{}
 
 	lines := strings.Split(tridout, "\n")
+	log.Debugln("TRiD lines: ", lines)
 	if !(len(lines) > 1) {
 		return nil
 	}
