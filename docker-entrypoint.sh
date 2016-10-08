@@ -8,6 +8,8 @@ fi
 
 # Run as user "malice" if the command is "info"
 if [ "$1" = 'info' ]; then
+	chown -R malice:malice /malware
+
 	set -- gosu malice tini -- "$@"
 fi
 
