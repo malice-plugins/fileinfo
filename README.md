@@ -1,7 +1,7 @@
 malice-fileinfo
 ===============
 
-[![Circle CI](https://circleci.com/gh/maliceio/malice-fileinfo.png?style=shield)](https://circleci.com/gh/maliceio/malice-fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker image-207.7 MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
+[![Circle CI](https://circleci.com/gh/maliceio/malice-fileinfo.png?style=shield)](https://circleci.com/gh/maliceio/malice-fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker image-212.5 MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
 
 Malice File Info Plugin (exiftool, TRiD and ssdeep)
 
@@ -51,16 +51,9 @@ This will output to stdout and POST to malice results API webhook endpoint.
 
 ```json
 {
-  "file": {
-    "name": "cat",
-    "path": "/bin/cat",
-    "size": "51.86 kB",
-    "md5": "8fee23b7db38f7fa439ab2a71a5dfef4",
-    "sha1": "ea010d65968bdccf995ec7777eb7ef73b8460285",
-    "sha256": "41033b3bcc5805c072498bce21d328dae238626e513d5e16bc9f928864a8936e",
-    "sha512": "a7cdb673c4d076144a329700e6cc7b2f187a8e1b9ee2142b21b651cbe600af50b44d8c3c9c8fa800c941916568983d205fa5e3205680473943974711efee25dc",
+  "magic": {
     "mime": "application/x-executable",
-    "magic": "ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.26, BuildID[sha1]=8ffd894e500a9f125b32fa8a3f700f0f710961de, stripped"
+    "description": "ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.26, BuildID[sha1]=8ffd894e500a9f125b32fa8a3f700f0f710961de, stripped"
   },
   "ssdeep": "768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0",
   "trid": [
@@ -85,17 +78,11 @@ This will output to stdout and POST to malice results API webhook endpoint.
 
 ---
 
-#### File
-| Field  | Value                                                                                                                                                                                                    |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Name   | cat                                                                                                                                                                                                      |
-| Path   | /bin/cat                                                                                                                                                                                                 |
-| Size   | 51.86 kB                                                                                                                                                                                                 |
-| MD5    | 8fee23b7db38f7fa439ab2a71a5dfef4                                                                                                                                                                         |
-| SHA1   | ea010d65968bdccf995ec7777eb7ef73b8460285                                                                                                                                                                 |
-| SHA256 | 41033b3bcc5805c072498bce21d328dae238626e513d5e16bc9f928864a8936e                                                                                                                                         |
-| Mime   | application/x-executable                                                                                                                                                                                 |
-| Magic  | ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.26, BuildID[sha1]=8ffd894e500a9f125b32fa8a3f700f0f710961de, stripped |
+#### Magic
+| Field       | Value                                                                                                                                                                                                    |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mime        | application/x-executable                                                                                                                                                                                 |
+| Description | ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.26, BuildID[sha1]=8ffd894e500a9f125b32fa8a3f700f0f710961de, stripped |
 
 #### SSDeep
 768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
@@ -107,14 +94,14 @@ This will output to stdout and POST to malice results API webhook endpoint.
 #### Exiftool
 | Field                 | Value                    |
 | --------------------- | ------------------------ |
-| CPUByteOrder          | Little endian            |
-| ObjectFileType        | Executable file          |
 | CPUType               | AMD x86-64               |
-| ExifToolVersionNumber | 10.25                    |
-| FileType              | ELF executable           |
-| MIMEType              | application/octet-stream |
 | FileSize              | 51 kB                    |
+| FileType              | ELF executable           |
 | FileTypeExtension     |                          |
+| ObjectFileType        | Executable file          |
+| CPUByteOrder          | Little endian            |
+| ExifToolVersionNumber | 10.25                    |
+| MIMEType              | application/octet-stream |
 | CPUArchitecture       | 64 bit                   |
 
 ---
