@@ -1,9 +1,9 @@
 NAME=fileinfo
 VERSION=$(shell cat VERSION)
-DEV_RUN_OPTS ?= TEST
+DEV_RUN_OPTS ?= /bin/cat
 
 dev:
-	docker build -f Dockerfile.dev -t $(NAME):dev .
+	docker build -f Dockerfile -t $(NAME):dev .
 	docker run --rm $(NAME):dev $(DEV_RUN_OPTS)
 
 build:

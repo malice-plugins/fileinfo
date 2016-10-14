@@ -24,14 +24,14 @@ RUN set -x \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true \
   && echo "Grab tini for signal processing and zombie killing..." \
-	&& wget -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" \
-	&& wget -O /usr/local/bin/tini.asc "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 6380DC428747F6C393FEACA59A84159D7001A4E5 \
-	&& gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/tini.asc \
-	&& chmod +x /usr/local/bin/tini \
-	&& tini -h \
+  && wget -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" \
+  && wget -O /usr/local/bin/tini.asc "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini.asc" \
+  && export GNUPGHOME="$(mktemp -d)" \
+  && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 6380DC428747F6C393FEACA59A84159D7001A4E5 \
+  && gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini \
+  && rm -r "$GNUPGHOME" /usr/local/bin/tini.asc \
+  && chmod +x /usr/local/bin/tini \
+  && tini -h \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove ca-certificates wget \
   && apt-get clean \
