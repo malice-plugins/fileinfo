@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -233,7 +234,9 @@ func main() {
 		}
 
 		// Get all file metadata
-		fileData := FileData{Path: path}
+		absPath, err := filepath.Abs(path)
+		utils.Assert(err)
+		fileData := FileData{Path: absPath}
 		fileData.Init()
 
 		fileInfo := FileInfo{

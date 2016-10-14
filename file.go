@@ -12,7 +12,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/docker/go-units"
-	er "github.com/maliceio/malice/malice/errors"
+	"github.com/maliceio/go-plugin-utils/utils"
 	"github.com/rakyll/magicmime"
 )
 
@@ -48,7 +48,7 @@ func (file *FileData) Init() {
 
 	// Read in file data
 	dat, err := ioutil.ReadFile(file.Path)
-	er.CheckError(err)
+	utils.Assert(err)
 
 	file.GetMD5(dat)
 	file.GetSHA1(dat)
@@ -103,7 +103,7 @@ func (file *FileData) GetMD5(data []byte) (hMd5Sum string, err error) {
 
 	hmd5 := md5.New()
 	_, err = hmd5.Write(data)
-	er.CheckError(err)
+	utils.Assert(err)
 	hMd5Sum = fmt.Sprintf("%x", hmd5.Sum(nil))
 
 	file.MD5 = hMd5Sum
@@ -116,7 +116,7 @@ func (file *FileData) GetSHA1(data []byte) (h1Sum string, err error) {
 
 	h1 := sha1.New()
 	_, err = h1.Write(data)
-	er.CheckError(err)
+	utils.Assert(err)
 	h1Sum = fmt.Sprintf("%x", h1.Sum(nil))
 
 	file.SHA1 = h1Sum
@@ -129,7 +129,7 @@ func (file *FileData) GetSHA256(data []byte) (h256Sum string, err error) {
 
 	h256 := sha256.New()
 	_, err = h256.Write(data)
-	er.CheckError(err)
+	utils.Assert(err)
 	h256Sum = fmt.Sprintf("%x", h256.Sum(nil))
 
 	file.SHA256 = h256Sum
@@ -142,7 +142,7 @@ func (file *FileData) GetSHA512(data []byte) (h512Sum string, err error) {
 
 	h512 := sha512.New()
 	_, err = h512.Write(data)
-	er.CheckError(err)
+	utils.Assert(err)
 	h512Sum = fmt.Sprintf("%x", h512.Sum(nil))
 
 	file.SHA512 = h512Sum
@@ -187,6 +187,6 @@ func (file *FileData) GetFileMagicType() (magictype string, err error) {
 // ToJSON converts File object to []byte JSON
 func (file *FileData) ToJSON() []byte {
 	fileJSON, err := json.Marshal(file)
-	er.CheckError(err)
+	utils.Assert(err)
 	return fileJSON
 }
