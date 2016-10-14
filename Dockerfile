@@ -2,15 +2,11 @@ FROM debian:wheezy
 
 MAINTAINER blacktop, https://github.com/blacktop
 
-# This is the release of https://github.com/hashicorp/docker-base to pull in order
-# to provide HashiCorp-built versions of basic utilities like dumb-init and gosu.
-ENV DOCKER_BASE_VERSION 0.0.4
-ENV DBASE_URL releases.hashicorp.com/docker-base
-
 # Create a malice user and group first so the IDs get set the same way, even as
 # the rest of this may change over time.
 RUN groupadd -r malice && useradd -r -g malice malice
 
+ENV GO_VERSION 1.7.1
 ENV GOSU_VERSION 1.10
 ENV TINI_VERSION v0.9.0
 
@@ -70,17 +66,25 @@ RUN buildDeps='ca-certificates \
   && mv trid /usr/bin/ \
   && mv triddefs.trd /usr/bin/ \
   && echo "Installing ssdeep..." \
-  && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > /tmp/$SSDEEP.tar.gz \
+  && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > \
+    /tmp/$SSDEEP.tar.gz \
   && cd /tmp \
   && tar zxvf $SSDEEP.tar.gz \
   && cd $SSDEEP \
   && ./configure \
   && make \
   && make install \
+  && echo "Install Go..." \
+  && cd /tmp \
+  && ARCH="$(dpkg --print-architecture)" \
+  && curl -Ls https://storage.googleapis.com/golang/go$GO_VERSION.linux-$ARCH.tar.gz > /tmp/go.tar.gz \
+  && tar -C /usr/local -xzf /tmp/go.tar.gz \
+  && export PATH=$PATH:/usr/local/go/bin \
   && echo "Building info Go binary..." \
   && cd /go/src/github.com/maliceio/malice-fileinfo \
   && mv docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
   && export GOPATH=/go \
+  && go version \
   && go get \
   && go build -ldflags "-X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
   && echo "Clean up unnecessary files..." \
