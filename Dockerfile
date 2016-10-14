@@ -42,7 +42,7 @@ ENV SSDEEP ssdeep-2.13
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \
                build-essential \
-               golang-go \
+               libmagic-dev \
                mercurial \
                git-core \
                openssl \
@@ -53,7 +53,7 @@ RUN buildDeps='ca-certificates \
   && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
   && apt-get update -qq \
   && apt-get install -t testing libc6 \
-  && apt-get install -yq --no-install-recommends $buildDeps libimage-exiftool-perl libmagic-dev \
+  && apt-get install -yq --no-install-recommends $buildDeps libimage-exiftool-perl \
   && mkdir /malware \
   && chown -R malice:malice /malware \
   && echo "Downloading TRiD and Database..." \
@@ -90,7 +90,7 @@ RUN buildDeps='ca-certificates \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go /root/.gnupg
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go /usr/local/go /root/.gnupg
 
 VOLUME ["/malware"]
 
