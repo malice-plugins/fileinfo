@@ -57,7 +57,7 @@ RUN buildDeps='ca-certificates \
   && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
   && apt-get update -qq \
   && apt-get install -t testing libc6 \
-  && apt-get install -yq $buildDeps libimage-exiftool-perl --no-install-recommends \
+  && apt-get install -yq --no-install-recommends $buildDeps libimage-exiftool-perl libmagic-dev \
   && mkdir /malware \
   && chown -R malice:malice /malware \
   && echo "Downloading TRiD and Database..." \

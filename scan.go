@@ -34,6 +34,8 @@ type pluginResults struct {
 
 // FileInfo json object
 type FileInfo struct {
+	File FileData `json:"file" structs:"file"`
+	// Ssdeep string `json:"ssdeep"`
 	SSDeep   string            `json:"ssdeep" structs:"ssdeep"`
 	TRiD     []string          `json:"trid" structs:"trid"`
 	Exiftool map[string]string `json:"exiftool" structs:"exiftool"`
@@ -119,6 +121,21 @@ func printStatus(resp gorequest.Response, body string, errs []error) {
 }
 
 func printMarkDownTable(finfo FileInfo) {
+
+	fmt.Println("#### File")
+	table := clitable.New([]string{"Field", "Value"})
+	table.AddRow(map[string]interface{}{"Field": "Name", "Value": finfo.File.Name})
+	table.AddRow(map[string]interface{}{"Field": "Path", "Value": finfo.File.Path})
+	table.AddRow(map[string]interface{}{"Field": "Size", "Value": finfo.File.Size})
+	table.AddRow(map[string]interface{}{"Field": "MD5", "Value": finfo.File.MD5})
+	table.AddRow(map[string]interface{}{"Field": "SHA1", "Value": finfo.File.SHA1})
+	table.AddRow(map[string]interface{}{"Field": "SHA256", "Value": finfo.File.SHA256})
+	// table.AddRow(map[string]interface{}{"Field": "SHA512", "Value": finfo.File.SHA512})
+	table.AddRow(map[string]interface{}{"Field": "Mime", "Value": finfo.File.Mime})
+	table.AddRow(map[string]interface{}{"Field": "Magic", "Value": finfo.File.Magic})
+	table.Markdown = true
+	table.Print()
+	fmt.Println()
 
 	if len(finfo.SSDeep) > 0 {
 		// print ssdeep
@@ -215,7 +232,12 @@ func main() {
 			log.SetLevel(log.DebugLevel)
 		}
 
+		// Get all file metadata
+		fileData := FileData{Path: path}
+		fileData.Init()
+
 		fileInfo := FileInfo{
+			File:     fileData,
 			SSDeep:   ParseSsdeepOutput(utils.RunCommand("ssdeep", path)),
 			TRiD:     ParseTRiDOutput(utils.RunCommand("trid", path)),
 			Exiftool: ParseExiftoolOutput(utils.RunCommand("exiftool", path)),
