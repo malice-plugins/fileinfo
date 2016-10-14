@@ -3,16 +3,17 @@ machine:
     - docker
 
 dependencies:
-  pre:
-    - make circleci
+  cache_directories:
+    - "~/docker"
   override:
-    - make build
-  post:
-    - cp build/* $CIRCLE_ARTIFACTS
+    - docker info
+    - if [[ -e ~/docker/image.tar ]]; then docker load --input ~/docker/image.tar; fi
+    - docker build -t malice_fileinfo .
+    - mkdir -p ~/docker; docker save malice_fileinfo > ~/docker/image.tar
 
 test:
   override:
-    - /bin/true
+    - docker run malice_fileinfo /bin/cat
 
 deployment:
   # master:

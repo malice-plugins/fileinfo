@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/maliceio/go-plugin-utils/database/elasticsearch"
 	"github.com/maliceio/go-plugin-utils/utils"
 	"github.com/parnurzeal/gorequest"
+	"github.com/rakyll/magicmime"
 	"github.com/urfave/cli"
 )
 
@@ -33,13 +33,43 @@ type pluginResults struct {
 	FileInfo FileInfo `structs:"fileinfo"`
 }
 
+// FileMagic is file magic
+type FileMagic struct {
+	Mime        string `json:"mime" structs:"mime"`
+	Description string `json:"description" structs:"description"`
+}
+
 // FileInfo json object
 type FileInfo struct {
-	File FileData `json:"file" structs:"file"`
+	Magic FileMagic `json:"magic" structs:"magic"`
 	// Ssdeep string `json:"ssdeep"`
 	SSDeep   string            `json:"ssdeep" structs:"ssdeep"`
 	TRiD     []string          `json:"trid" structs:"trid"`
 	Exiftool map[string]string `json:"exiftool" structs:"exiftool"`
+}
+
+// GetFileMimeType returns the mime-type of a file path
+func GetFileMimeType(path string) string {
+
+	utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
+	defer magicmime.Close()
+
+	mimetype, err := magicmime.TypeByFile(path)
+	utils.Assert(err)
+
+	return mimetype
+}
+
+// GetFileDescription returns the textual libmagic type of a file path
+func GetFileDescription(path string) string {
+
+	utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
+	defer magicmime.Close()
+
+	magicdesc, err := magicmime.TypeByFile(path)
+	utils.Assert(err)
+
+	return magicdesc
 }
 
 // ParseExiftoolOutput convert exiftool output into JSON
@@ -123,17 +153,10 @@ func printStatus(resp gorequest.Response, body string, errs []error) {
 
 func printMarkDownTable(finfo FileInfo) {
 
-	fmt.Println("#### File")
+	fmt.Println("#### Magic")
 	table := clitable.New([]string{"Field", "Value"})
-	table.AddRow(map[string]interface{}{"Field": "Name", "Value": finfo.File.Name})
-	table.AddRow(map[string]interface{}{"Field": "Path", "Value": finfo.File.Path})
-	table.AddRow(map[string]interface{}{"Field": "Size", "Value": finfo.File.Size})
-	table.AddRow(map[string]interface{}{"Field": "MD5", "Value": finfo.File.MD5})
-	table.AddRow(map[string]interface{}{"Field": "SHA1", "Value": finfo.File.SHA1})
-	table.AddRow(map[string]interface{}{"Field": "SHA256", "Value": finfo.File.SHA256})
-	// table.AddRow(map[string]interface{}{"Field": "SHA512", "Value": finfo.File.SHA512})
-	table.AddRow(map[string]interface{}{"Field": "Mime", "Value": finfo.File.Mime})
-	table.AddRow(map[string]interface{}{"Field": "Magic", "Value": finfo.File.Magic})
+	table.AddRow(map[string]interface{}{"Field": "Mime", "Value": finfo.Magic.Mime})
+	table.AddRow(map[string]interface{}{"Field": "Description", "Value": finfo.Magic.Description})
 	table.Markdown = true
 	table.Print()
 	fmt.Println()
@@ -233,14 +256,13 @@ func main() {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		// Get all file metadata
-		absPath, err := filepath.Abs(path)
-		utils.Assert(err)
-		fileData := FileData{Path: absPath}
-		fileData.Init()
+		magic := FileMagic{
+			Mime:        GetFileMimeType(path),
+			Description: GetFileDescription(path),
+		}
 
 		fileInfo := FileInfo{
-			File:     fileData,
+			Magic:    magic,
 			SSDeep:   ParseSsdeepOutput(utils.RunCommand("ssdeep", path)),
 			TRiD:     ParseTRiDOutput(utils.RunCommand("trid", path)),
 			Exiftool: ParseExiftoolOutput(utils.RunCommand("exiftool", path)),

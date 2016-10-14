@@ -42,7 +42,6 @@ ENV SSDEEP ssdeep-2.13
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \
                build-essential \
-               libmagic-dev \
                mercurial \
                git-core \
                openssl \
@@ -53,7 +52,7 @@ RUN buildDeps='ca-certificates \
   && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
   && apt-get update -qq \
   && apt-get install -t testing libc6 \
-  && apt-get install -yq --no-install-recommends $buildDeps libimage-exiftool-perl \
+  && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libimage-exiftool-perl \
   && mkdir /malware \
   && chown -R malice:malice /malware \
   && echo "Downloading TRiD and Database..." \
