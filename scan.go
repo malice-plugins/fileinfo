@@ -228,6 +228,10 @@ func main() {
 			Usage: "output as Markdown table",
 		},
 		cli.BoolFlag{
+			Name:  "mime, m",
+			Usage: "output only mimetype",
+		},
+		cli.BoolFlag{
 			Name:   "post, p",
 			Usage:  "POST results to Malice webhook",
 			EnvVar: "MALICE_ENDPOINT",
@@ -254,6 +258,11 @@ func main() {
 
 		if c.Bool("verbose") {
 			log.SetLevel(log.DebugLevel)
+		}
+
+		if c.Bool("mime") {
+			fmt.Println(GetFileMimeType(path))
+			return nil
 		}
 
 		magic := FileMagic{
