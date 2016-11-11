@@ -30,7 +30,7 @@ Version: v0.1.0, BuildTime: 20160114
 Author:
   blacktop - <https://github.com/blacktop>
 
-Options:                                                                                                                  
+Options:
   --verbose, -V         verbose output
   --table, -t           output as Markdown table
   --mime, -m		    output only mimetype
