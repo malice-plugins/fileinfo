@@ -360,9 +360,11 @@ func main() {
 					request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
 				}
 				request.Post(os.Getenv("MALICE_ENDPOINT")).
-					Set("Task", path).
-					Send(fileInfoJSON).
+					Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
+					Send(string(fileInfoJSON)).
 					End(printStatus)
+
+				return nil
 			}
 			// write to stdout
 			fmt.Println(string(fileInfoJSON))
