@@ -299,7 +299,7 @@ func main() {
 		},
 		cli.IntFlag{
 			Name:   "timeout",
-			Value:  3,
+			Value:  5,
 			Usage:  "malice plugin timeout (in seconds)",
 			EnvVar: "MALICE_TIMEOUT",
 		},
@@ -335,9 +335,9 @@ func main() {
 
 		fileInfo := FileInfo{
 			Magic:    fi.Magic,
-			SSDeep:   ParseSsdeepOutput(utils.RunCommand("ssdeep", c.Int("timeout"), path)),
-			TRiD:     ParseTRiDOutput(utils.RunCommand("trid", c.Int("timeout"), path)),
-			Exiftool: ParseExiftoolOutput(utils.RunCommand("exiftool", c.Int("timeout"), path)),
+			SSDeep:   ParseSsdeepOutput(utils.RunCommand(ctx, "ssdeep", path)),
+			TRiD:     ParseTRiDOutput(utils.RunCommand(ctx, "trid", path)),
+			Exiftool: ParseExiftoolOutput(utils.RunCommand(ctx, "exiftool", path)),
 		}
 
 		// upsert into Database
