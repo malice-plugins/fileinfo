@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -26,8 +25,6 @@ var (
 	BuildTime string
 
 	fi FileInfo
-
-	wg sync.WaitGroup
 )
 
 const (
@@ -57,7 +54,6 @@ type FileInfo struct {
 
 // GetFileMimeType returns the mime-type of a file path
 func GetFileMimeType(ctx context.Context, path string) error {
-	defer wg.Done()
 
 	c := make(chan struct {
 		mimetype string
@@ -90,7 +86,6 @@ func GetFileMimeType(ctx context.Context, path string) error {
 
 // GetFileDescription returns the textual libmagic type of a file path
 func GetFileDescription(ctx context.Context, path string) error {
-	defer wg.Done()
 
 	c := make(chan struct {
 		magicdesc string
@@ -316,10 +311,9 @@ func main() {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		wg.Add(2)
-		go GetFileMimeType(ctx, path)
-		go GetFileDescription(ctx, path)
-		wg.Wait()
+		// run libmagic
+		GetFileMimeType(ctx, path)
+		GetFileDescription(ctx, path)
 
 		if c.Bool("mime") {
 			fmt.Println(fi.Magic.Mime)
