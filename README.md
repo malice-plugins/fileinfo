@@ -108,6 +108,8 @@ This will output to stdout and POST to malice results API webhook endpoint.
 
 ---
 
+## Documentation
+
 ### To write results to [ElasticSearch](https://www.elastic.co/products/elasticsearch)
 
 ```bash
@@ -116,7 +118,11 @@ $ docker run -d -p 9200:9200 -v malice:/data --name elastic elasticsearch
 $ docker run --rm --link elastic malice/fileinfo FILE
 ```
 
-### Documentation
+### POST results to a webhook
+
+```bash
+$ docker run -v `pwd`:/malware:ro -e MALICE_ENDPOINT="https://malice.io:31337/scan/file" malice/fileinfo --post evil.malware  
+```
 
 ### Issues
 

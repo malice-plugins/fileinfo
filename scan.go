@@ -205,7 +205,7 @@ func ParseTRiDOutput(tridout string, err error) []string {
 }
 
 func printStatus(resp gorequest.Response, body string, errs []error) {
-	fmt.Println(resp.Status)
+	fmt.Println(body)
 }
 
 func printMarkDownTable(finfo FileInfo) {
