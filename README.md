@@ -121,7 +121,9 @@ $ docker run --rm --link elastic malice/fileinfo FILE
 ### POST results to a webhook
 
 ```bash
-$ docker run -v `pwd`:/malware:ro -e MALICE_ENDPOINT="https://malice.io:31337/scan/file" malice/fileinfo --post evil.malware  
+$ docker run -v `pwd`:/malware:ro \
+             -e MALICE_ENDPOINT="https://malice.io:31337/scan/file" \
+             malice/fileinfo --post evil.malware
 ```
 
 ### Issues
