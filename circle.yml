@@ -13,7 +13,7 @@ dependencies:
 
 test:
   override:
-    - docker run malice_fileinfo /bin/cat
+    - docker run malice_fileinfo -t /bin/cat
 
 deployment:
   # master:
