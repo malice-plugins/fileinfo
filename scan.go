@@ -117,7 +117,13 @@ func GetFileDescription(ctx context.Context, path string) error {
 }
 
 // ParseExiftoolOutput convert exiftool output into JSON
-func ParseExiftoolOutput(exifout string) map[string]string {
+func ParseExiftoolOutput(exifout string, err error) map[string]string {
+
+	if err != nil {
+		m := make(map[string]string)
+		m["error"] = err.Error()
+		return m
+	}
 
 	var ignoreTags = []string{
 		"Directory",
@@ -150,7 +156,11 @@ func ParseExiftoolOutput(exifout string) map[string]string {
 }
 
 // ParseSsdeepOutput convert ssdeep output into JSON
-func ParseSsdeepOutput(ssdout string) string {
+func ParseSsdeepOutput(ssdout string, err error) string {
+
+	if err != nil {
+		return err.Error()
+	}
 
 	// Break output into lines
 	lines := strings.Split(ssdout, "\n")
@@ -168,7 +178,11 @@ func ParseSsdeepOutput(ssdout string) string {
 }
 
 // ParseTRiDOutput convert trid output into JSON
-func ParseTRiDOutput(tridout string) []string {
+func ParseTRiDOutput(tridout string, err error) []string {
+
+	if err != nil {
+		return []string{err.Error()}
+	}
 
 	keepLines := []string{}
 
@@ -320,27 +334,11 @@ func main() {
 			return nil
 		}
 
-		var output string
-		var err error
-
-		// run ssdeep
-		output, err = utils.RunCommand("ssdeep", c.Int("timeout"), path)
-		utils.Assert(err)
-		ParseSsdeepOutput(output)
-		// run trid
-		output, err = utils.RunCommand("trid", c.Int("timeout"), path)
-		utils.Assert(err)
-		ParseTRiDOutput(output)
-		// run exiftool
-		output, err = utils.RunCommand("exiftool", c.Int("timeout"), path)
-		utils.Assert(err)
-		ParseExiftoolOutput(output)
-
 		fileInfo := FileInfo{
 			Magic:    fi.Magic,
-			SSDeep:   fi.SSDeep,
-			TRiD:     fi.TRiD,
-			Exiftool: fi.Exiftool,
+			SSDeep:   ParseSsdeepOutput(utils.RunCommand("ssdeep", c.Int("timeout"), path)),
+			TRiD:     ParseTRiDOutput(utils.RunCommand("trid", c.Int("timeout"), path)),
+			Exiftool: ParseExiftoolOutput(utils.RunCommand("exiftool", c.Int("timeout"), path)),
 		}
 
 		// upsert into Database
