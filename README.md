@@ -31,18 +31,18 @@ Author:
   blacktop - <https://github.com/blacktop>
 
 Options:                                                                                                                  
-  --verbose, -V         verbose output                                                                                    
-  --table, -t           output as Markdown table                                                                          
+  --verbose, -V         verbose output
+  --table, -t           output as Markdown table
   --mime, -m		    output only mimetype
-  --post, -p            POST results to Malice webhook [$MALICE_ENDPOINT]                                                 
-  --proxy, -x           proxy settings for Malice webhook endpoint [$MALICE_PROXY]                                        
+  --post, -p            POST results to Malice webhook [$MALICE_ENDPOINT]
+  --proxy, -x           proxy settings for Malice webhook endpoint [$MALICE_PROXY]
   --timeout value       malice plugin timeout (in seconds) (default: 10) [$MALICE_TIMEOUT]
-  --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH]                         
-  --help, -h            show help                                                                                         
-  --version, -v         print the version                                                                                 
+  --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH]
+  --help, -h            show help
+  --version, -v         print the version
 
-Commands:                                                                                                                 
-  help  Shows a list of commands or help for one command                                                                  
+Commands:
+  help  Shows a list of commands or help for one command
 
 Run 'fileinfo COMMAND --help' for more information on a command.
 ```
