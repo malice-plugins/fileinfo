@@ -47,9 +47,10 @@ Commands:
 Run 'fileinfo COMMAND --help' for more information on a command.
 ```
 
-This will output to stdout and POST to malice results API webhook endpoint.
+Output
+------
 
-### Sample Output JSON:
+### Sample JSON:
 
 ```json
 {
@@ -76,26 +77,30 @@ This will output to stdout and POST to malice results API webhook endpoint.
 }
 ```
 
-### Sample Output STDOUT (Markdown Table):
+### Sample STDOUT (Markdown Table):
 
 ---
 
 #### Magic
+
 | Field       | Value                                                                                                                                                                                                    |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Mime        | application/x-executable                                                                                                                                                                                 |
 | Description | ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.26, BuildID[sha1]=8ffd894e500a9f125b32fa8a3f700f0f710961de, stripped |
 
 #### SSDeep
+
 768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
 
 #### TRiD
- -  50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
- -  49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
+
+-	50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
+-	49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
 
 #### Exiftool
+
 | Field                 | Value                    |
-| --------------------- | ------------------------ |
+|-----------------------|--------------------------|
 | CPUType               | AMD x86-64               |
 | FileSize              | 51 kB                    |
 | FileType              | ELF executable           |
@@ -108,7 +113,8 @@ This will output to stdout and POST to malice results API webhook endpoint.
 
 ---
 
-## Documentation
+Documentation
+-------------
 
 ### To write results to [ElasticSearch](https://www.elastic.co/products/elasticsearch)
 
@@ -131,7 +137,17 @@ $ docker run -v `pwd`:/malware:ro \
 
 ### Issues
 
-Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-fileinfo/issues/new) and I'll get right on it.
+Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-fileinfo/issues/new)
+
+### CHANGELOG
+
+See [`CHANGELOG.md`](https://github.com/maliceio/malice-fileinfo/blob/master/CHANGELOG.md)
+
+### Contributing
+
+[See all contributors on GitHub](https://github.com/maliceio/malice-fileinfo/graphs/contributors).
+
+Please update the [CHANGELOG.md](https://github.com/maliceio/malice-fileinfo/blob/master/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
 
 ### License
 
