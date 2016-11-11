@@ -6,7 +6,6 @@ MAINTAINER blacktop, https://github.com/blacktop
 # the rest of this may change over time.
 RUN groupadd -r malice && useradd -r -g malice malice
 
-ENV GO_VERSION 1.7.1
 ENV GOSU_VERSION 1.10
 ENV TINI_VERSION v0.9.0
 
@@ -39,14 +38,10 @@ RUN set -x \
 
 ENV SSDEEP ssdeep-2.13
 
-COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \
                build-essential \
-               mercurial \
-               git-core \
                openssl \
                unzip \
-               gnupg \
                curl' \
   && set -x \
   && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
@@ -73,15 +68,34 @@ RUN buildDeps='ca-certificates \
   && ./configure \
   && make \
   && make install \
+  && echo "Clean up unnecessary files..." \
+  && apt-get purge -y --auto-remove $buildDeps \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.gnupg
+
+ENV GOLANG_VERSION 1.7.3
+ENV GOLANG_DOWNLOAD_SHA256 508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e
+
+COPY . /go/src/github.com/maliceio/malice-fileinfo
+RUN buildDeps='ca-certificates \
+               build-essential \
+               mercurial \
+               git-core \
+               openssl \
+               gnupg \
+               curl' \
+  && set -x \
+  && apt-get update -qq \
+  && apt-get install -yq --no-install-recommends $buildDeps \
   && echo "Install Go..." \
   && cd /tmp \
   && ARCH="$(dpkg --print-architecture)" \
-  && curl -Ls https://storage.googleapis.com/golang/go$GO_VERSION.linux-$ARCH.tar.gz > /tmp/go.tar.gz \
-  && tar -C /usr/local -xzf /tmp/go.tar.gz \
+  && curl -Ls https://storage.googleapis.com/golang/go$GOLANG_VERSION.linux-$ARCH.tar.gz > /tmp/golang.tar.gz \
+  && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
+  && tar -C /usr/local -xzf /tmp/golang.tar.gz \
   && export PATH=$PATH:/usr/local/go/bin \
   && echo "Building info Go binary..." \
   && cd /go/src/github.com/maliceio/malice-fileinfo \
-  && mv docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
   && export GOPATH=/go \
   && go version \
   && go get \
@@ -95,7 +109,6 @@ VOLUME ["/malware"]
 
 WORKDIR /malware
 
-# ENTRYPOINT ["docker-entrypoint.sh"]
 ENTRYPOINT ["gosu","malice","tini","--","info"]
 
 CMD ["--help"]

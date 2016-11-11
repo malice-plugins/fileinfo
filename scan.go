@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -17,11 +19,16 @@ import (
 	"github.com/urfave/cli"
 )
 
-// Version stores the plugin's version
-var Version string
+var (
+	// Version stores the plugin's version
+	Version string
+	// BuildTime stores the plugin's build time
+	BuildTime string
 
-// BuildTime stores the plugin's build time
-var BuildTime string
+	fi FileInfo
+
+	wg sync.WaitGroup
+)
 
 const (
 	name     = "fileinfo"
@@ -49,27 +56,69 @@ type FileInfo struct {
 }
 
 // GetFileMimeType returns the mime-type of a file path
-func GetFileMimeType(path string) string {
+func GetFileMimeType(ctx context.Context, path string) error {
+	defer wg.Done()
 
-	utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
-	defer magicmime.Close()
+	c := make(chan struct {
+		mimetype string
+		err      error
+	}, 1)
 
-	mimetype, err := magicmime.TypeByFile(path)
-	utils.Assert(err)
+	go func() {
+		utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
+		defer magicmime.Close()
 
-	return mimetype
+		mt, err := magicmime.TypeByFile(path)
+		pack := struct {
+			mimetype string
+			err      error
+		}{mt, err}
+		c <- pack
+	}()
+
+	select {
+	case <-ctx.Done():
+		<-c // Wait for mime
+		fmt.Println("Cancel the context")
+		return ctx.Err()
+	case ok := <-c:
+		utils.Assert(ok.err)
+		fi.Magic.Mime = ok.mimetype
+		return ok.err
+	}
 }
 
 // GetFileDescription returns the textual libmagic type of a file path
-func GetFileDescription(path string) string {
+func GetFileDescription(ctx context.Context, path string) error {
+	defer wg.Done()
 
-	utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
-	defer magicmime.Close()
+	c := make(chan struct {
+		magicdesc string
+		err       error
+	}, 1)
 
-	magicdesc, err := magicmime.TypeByFile(path)
-	utils.Assert(err)
+	go func() {
+		utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
+		defer magicmime.Close()
 
-	return magicdesc
+		magicdesc, err := magicmime.TypeByFile(path)
+		pack := struct {
+			magicdesc string
+			err       error
+		}{magicdesc, err}
+		c <- pack
+	}()
+
+	select {
+	case <-ctx.Done():
+		<-c // Wait for mime
+		fmt.Println("Cancel the context")
+		return ctx.Err()
+	case ok := <-c:
+		utils.Assert(ok.err)
+		fi.Magic.Description = ok.magicdesc
+		return ok.err
+	}
 }
 
 // ParseExiftoolOutput convert exiftool output into JSON
@@ -217,7 +266,6 @@ func main() {
 	app.Version = Version + ", BuildTime: " + BuildTime
 	app.Compiled, _ = time.Parse("20060102", BuildTime)
 	app.Usage = "Malice File Info Plugin - ssdeep/exiftool/TRiD"
-	var elasitcsearch string
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:  "verbose, V",
@@ -241,15 +289,23 @@ func main() {
 			Usage:  "proxy settings for Malice webhook endpoint",
 			EnvVar: "MALICE_PROXY",
 		},
+		cli.IntFlag{
+			Name:   "timeout",
+			Value:  3,
+			Usage:  "malice plugin timeout (in seconds)",
+			EnvVar: "MALICE_TIMEOUT",
+		},
 		cli.StringFlag{
-			Name:        "elasitcsearch",
-			Value:       "",
-			Usage:       "elasitcsearch address for Malice to store results",
-			EnvVar:      "MALICE_ELASTICSEARCH",
-			Destination: &elasitcsearch,
+			Name:   "elasitcsearch",
+			Value:  "",
+			Usage:  "elasitcsearch address for Malice to store results",
+			EnvVar: "MALICE_ELASTICSEARCH",
 		},
 	}
 	app.Action = func(c *cli.Context) error {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
+		defer cancel()
+
 		path := c.Args().First()
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -260,25 +316,41 @@ func main() {
 			log.SetLevel(log.DebugLevel)
 		}
 
+		wg.Add(2)
+		go GetFileMimeType(ctx, path)
+		go GetFileDescription(ctx, path)
+		wg.Wait()
+
 		if c.Bool("mime") {
-			fmt.Println(GetFileMimeType(path))
+			fmt.Println(fi.Magic.Mime)
 			return nil
 		}
 
-		magic := FileMagic{
-			Mime:        GetFileMimeType(path),
-			Description: GetFileDescription(path),
-		}
+		var output string
+		var err error
+
+		// run ssdeep
+		output, err = utils.RunCommand("ssdeep", c.Int("timeout"), path)
+		utils.Assert(err)
+		ParseSsdeepOutput(output)
+		// run trid
+		output, err = utils.RunCommand("trid", c.Int("timeout"), path)
+		utils.Assert(err)
+		ParseTRiDOutput(output)
+		// run exiftool
+		output, err = utils.RunCommand("exiftool", c.Int("timeout"), path)
+		utils.Assert(err)
+		ParseExiftoolOutput(output)
 
 		fileInfo := FileInfo{
-			Magic:    magic,
-			SSDeep:   ParseSsdeepOutput(utils.RunCommand("ssdeep", path)),
-			TRiD:     ParseTRiDOutput(utils.RunCommand("trid", path)),
-			Exiftool: ParseExiftoolOutput(utils.RunCommand("exiftool", path)),
+			Magic:    fi.Magic,
+			SSDeep:   fi.SSDeep,
+			TRiD:     fi.TRiD,
+			Exiftool: fi.Exiftool,
 		}
 
 		// upsert into Database
-		elasticsearch.InitElasticSearch()
+		elasticsearch.InitElasticSearch(c.String("elasitcsearch"))
 		elasticsearch.WritePluginResultsToDatabase(elasticsearch.PluginResults{
 			ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
 			Name:     name,
