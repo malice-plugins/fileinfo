@@ -246,30 +246,11 @@ func printMarkDownTable(finfo FileInfo) {
 	}
 }
 
-var appHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]
-
-{{.Usage}}
-
-Version: {{.Version}}{{if or .Author .Email}}
-
-Author:{{if .Author}}
-  {{.Author}}{{if .Email}} - <{{.Email}}>{{end}}{{else}}
-  {{.Email}}{{end}}{{end}}
-{{if .Flags}}
-Options:
-  {{range .Flags}}{{.}}
-  {{end}}{{end}}
-Commands:
-  {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
-  {{end}}
-Run '{{.Name}} COMMAND --help' for more information on a command.
-`
-
 func main() {
 
 	var elastic string
 
-	cli.AppHelpTemplate = appHelpTemplate
+	cli.AppHelpTemplate = utils.AppHelpTemplate
 	app := cli.NewApp()
 
 	app.Name = "fileinfo"
