@@ -45,8 +45,7 @@ type FileMagic struct {
 
 // FileInfo json object
 type FileInfo struct {
-	Magic FileMagic `json:"magic" structs:"magic"`
-	// Ssdeep string `json:"ssdeep"`
+	Magic    FileMagic         `json:"magic" structs:"magic"`
 	SSDeep   string            `json:"ssdeep" structs:"ssdeep"`
 	TRiD     []string          `json:"trid" structs:"trid"`
 	Exiftool map[string]string `json:"exiftool" structs:"exiftool"`
