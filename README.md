@@ -47,10 +47,10 @@ Commands:
 Run 'fileinfo COMMAND --help' for more information on a command.
 ```
 
-Output
-------
+Sample Output
+-------------
 
-### Sample JSON:
+### JSON:
 
 ```json
 {
@@ -77,7 +77,7 @@ Output
 }
 ```
 
-### Sample STDOUT (Markdown Table):
+### STDOUT (Markdown Table):
 
 ---
 
