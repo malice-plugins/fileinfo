@@ -1,7 +1,7 @@
 malice-fileinfo
 ===============
 
-[![Circle CI](https://circleci.com/gh/maliceio/malice-fileinfo.png?style=shield)](https://circleci.com/gh/maliceio/malice-fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker image-212.5 MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
+[![Circle CI](https://circleci.com/gh/maliceio/malice-fileinfo.png?style=shield)](https://circleci.com/gh/maliceio/malice-fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker image-226 MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
 
 Malice File Info Plugin (exiftool, TRiD and ssdeep)
 
@@ -25,7 +25,7 @@ Usage: fileinfo [OPTIONS] COMMAND [arg...]
 
 Malice File Info Plugin - ssdeep/TRiD/exiftool
 
-Version: v0.1.0, BuildTime: 20160114
+Version: v0.1.0, BuildTime: 20170211
 
 Author:
   blacktop - <https://github.com/blacktop>
@@ -34,7 +34,7 @@ Options:
   --verbose, -V         verbose output
   --table, -t           output as Markdown table
   --mime, -m		    output only mimetype
-  --post, -p            POST results to Malice webhook [$MALICE_ENDPOINT]
+  --callback, -c	    POST results to Malice webhook [$MALICE_ENDPOINT]
   --proxy, -x           proxy settings for Malice webhook endpoint [$MALICE_PROXY]
   --timeout value       malice plugin timeout (in seconds) (default: 10) [$MALICE_TIMEOUT]
   --elasitcsearch value elasitcsearch address for Malice to store results [$MALICE_ELASTICSEARCH]
@@ -42,7 +42,8 @@ Options:
   --version, -v         print the version
 
 Commands:
-  help  Shows a list of commands or help for one command
+  web       Create a File Info scan web service  
+  help		Shows a list of commands or help for one command
 
 Run 'fileinfo COMMAND --help' for more information on a command.
 ```
@@ -116,24 +117,9 @@ Sample Output
 Documentation
 -------------
 
-### To write results to [ElasticSearch](https://www.elastic.co/products/elasticsearch)
-
-```bash
-$ docker volume create --name malice
-$ docker run -d --name elastic \
-                -p 9200:9200 \
-                -v malice:/usr/share/elasticsearch/data \
-                 blacktop/elasticsearch
-$ docker run --rm --link elastic malice/fileinfo FILE
-```
-
-### POST results to a webhook
-
-```bash
-$ docker run -v `pwd`:/malware:ro \
-             -e MALICE_ENDPOINT="https://malice.io:31337/scan/file" \
-             malice/fileinfo --post evil.malware
-```
+-	[To write results to ElasticSearch](https://github.com/maliceio/malice-fileinfo/blob/master/docs/elasticsearch.md)
+-	[To create a File Info micro-service](https://github.com/maliceio/malice-fileinfo/blob/master/docs/web.md)
+-	[To post results to a webhook](https://github.com/maliceio/malice-fileinfo/blob/master/docs/callback.md)
 
 ### Issues
 
@@ -151,4 +137,4 @@ Please update the [CHANGELOG.md](https://github.com/maliceio/malice-fileinfo/blo
 
 ### License
 
-MIT Copyright (c) 2016 **blacktop**
+MIT Copyright (c) 2016-2017 **blacktop**

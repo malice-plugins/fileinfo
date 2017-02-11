@@ -73,8 +73,8 @@ RUN buildDeps='ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.gnupg
 
-ENV GOLANG_VERSION 1.7.3
-ENV GOLANG_DOWNLOAD_SHA256 508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e
+ENV GOLANG_VERSION 1.7.5
+ENV GOLANG_DOWNLOAD_SHA256 2e4dd6c44f0693bef4e7b46cc701513d74c3cc44f2419bf519d7868b12931ac3
 
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \
@@ -106,9 +106,7 @@ RUN buildDeps='ca-certificates \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go /usr/local/go /root/.gnupg
 
 VOLUME ["/malware"]
-
 WORKDIR /malware
 
 ENTRYPOINT ["gosu","malice","tini","--","info"]
-
 CMD ["--help"]
