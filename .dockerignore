@@ -10,3 +10,4 @@ build
 circle.yml
 docker-compose.yml
 CHANGELOG.md
+docs/*
