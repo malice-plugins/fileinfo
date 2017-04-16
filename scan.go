@@ -4,15 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/crackcomm/go-clitable"
 	"github.com/fatih/structs"
+	"github.com/gorilla/mux"
 	"github.com/maliceio/go-plugin-utils/database/elasticsearch"
 	"github.com/maliceio/go-plugin-utils/utils"
+	"github.com/maliceio/malice/utils/clitable"
 	"github.com/parnurzeal/gorequest"
 	"github.com/rakyll/magicmime"
 	"github.com/urfave/cli"
@@ -204,10 +207,6 @@ func ParseTRiDOutput(tridout string, err error) []string {
 	return keepLines
 }
 
-func printStatus(resp gorequest.Response, body string, errs []error) {
-	fmt.Println(body)
-}
-
 func printMarkDownTable(finfo FileInfo) {
 
 	fmt.Println("#### Magic")
@@ -246,6 +245,68 @@ func printMarkDownTable(finfo FileInfo) {
 	}
 }
 
+func printStatus(resp gorequest.Response, body string, errs []error) {
+	fmt.Println(body)
+}
+
+func webService() {
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/scan", webAvScan).Methods("POST")
+	log.Info("web service listening on port :3993")
+	log.Fatal(http.ListenAndServe(":3993", router))
+}
+
+func webAvScan(w http.ResponseWriter, r *http.Request) {
+
+	r.ParseMultipartForm(32 << 20)
+	file, header, err := r.FormFile("malware")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "Please supply a valid file to scan.")
+		log.Error(err)
+	}
+	defer file.Close()
+
+	log.Debug("Uploaded fileName: ", header.Filename)
+
+	tmpfile, err := ioutil.TempFile("/malware", "web_")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	data, err := ioutil.ReadAll(file)
+
+	if _, err = tmpfile.Write(data); err != nil {
+		log.Fatal(err)
+	}
+	if err = tmpfile.Close(); err != nil {
+		log.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(60)*time.Second)
+	defer cancel()
+
+	// Do FileInfo scan
+	path := tmpfile.Name()
+	GetFileMimeType(ctx, path)
+	GetFileDescription(ctx, path)
+
+	fileInfo := FileInfo{
+		Magic:    fi.Magic,
+		SSDeep:   ParseSsdeepOutput(utils.RunCommand(ctx, "ssdeep", path)),
+		TRiD:     ParseTRiDOutput(utils.RunCommand(ctx, "trid", path)),
+		Exiftool: ParseExiftoolOutput(utils.RunCommand(ctx, "exiftool", path)),
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(fileInfo); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 
 	var elastic string
@@ -273,7 +334,7 @@ func main() {
 			Usage: "output only mimetype",
 		},
 		cli.BoolFlag{
-			Name:   "post, p",
+			Name:   "callback, c",
 			Usage:  "POST results to Malice webhook",
 			EnvVar: "MALICE_ENDPOINT",
 		},
@@ -282,12 +343,6 @@ func main() {
 			Usage:  "proxy settings for Malice webhook endpoint",
 			EnvVar: "MALICE_PROXY",
 		},
-		cli.IntFlag{
-			Name:   "timeout",
-			Value:  10,
-			Usage:  "malice plugin timeout (in seconds)",
-			EnvVar: "MALICE_TIMEOUT",
-		},
 		cli.StringFlag{
 			Name:        "elasitcsearch",
 			Value:       "",
@@ -295,65 +350,89 @@ func main() {
 			EnvVar:      "MALICE_ELASTICSEARCH",
 			Destination: &elastic,
 		},
+		cli.IntFlag{
+			Name:   "timeout",
+			Value:  10,
+			Usage:  "malice plugin timeout (in seconds)",
+			EnvVar: "MALICE_TIMEOUT",
+		},
+	}
+	app.Commands = []cli.Command{
+		{
+			Name:  "web",
+			Usage: "Create a File Info web service",
+			Action: func(c *cli.Context) error {
+				webService()
+				return nil
+			},
+		},
 	}
 	app.Action = func(c *cli.Context) error {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
-		defer cancel()
-
-		path := c.Args().First()
-
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			utils.Assert(err)
-		}
-
 		if c.Bool("verbose") {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		// run libmagic
-		GetFileMimeType(ctx, path)
-		GetFileDescription(ctx, path)
+		if c.Args().Present() {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Int("timeout"))*time.Second)
+			defer cancel()
 
-		if c.Bool("mime") {
-			fmt.Println(fi.Magic.Mime)
-			return nil
-		}
+			path := c.Args().First()
 
-		fileInfo := FileInfo{
-			Magic:    fi.Magic,
-			SSDeep:   ParseSsdeepOutput(utils.RunCommand(ctx, "ssdeep", path)),
-			TRiD:     ParseTRiDOutput(utils.RunCommand(ctx, "trid", path)),
-			Exiftool: ParseExiftoolOutput(utils.RunCommand(ctx, "exiftool", path)),
-		}
+			if _, err := os.Stat(path); os.IsNotExist(err) {
+				utils.Assert(err)
+			}
 
-		// upsert into Database
-		elasticsearch.InitElasticSearch(elastic)
-		elasticsearch.WritePluginResultsToDatabase(elasticsearch.PluginResults{
-			ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
-			Name:     name,
-			Category: category,
-			Data:     structs.Map(fileInfo),
-		})
+			if c.Bool("verbose") {
+				log.SetLevel(log.DebugLevel)
+			}
 
-		if c.Bool("table") {
-			printMarkDownTable(fileInfo)
-		} else {
-			fileInfoJSON, err := json.Marshal(fileInfo)
-			utils.Assert(err)
-			if c.Bool("post") {
-				request := gorequest.New()
-				if c.Bool("proxy") {
-					request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
-				}
-				request.Post(os.Getenv("MALICE_ENDPOINT")).
-					Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
-					Send(string(fileInfoJSON)).
-					End(printStatus)
+			// run libmagic
+			GetFileMimeType(ctx, path)
+			GetFileDescription(ctx, path)
 
+			if c.Bool("mime") {
+				fmt.Println(fi.Magic.Mime)
 				return nil
 			}
-			// write to stdout
-			fmt.Println(string(fileInfoJSON))
+
+			fileInfo := FileInfo{
+				Magic:    fi.Magic,
+				SSDeep:   ParseSsdeepOutput(utils.RunCommand(ctx, "ssdeep", path)),
+				TRiD:     ParseTRiDOutput(utils.RunCommand(ctx, "trid", path)),
+				Exiftool: ParseExiftoolOutput(utils.RunCommand(ctx, "exiftool", path)),
+			}
+
+			// upsert into Database
+			elasticsearch.InitElasticSearch(elastic)
+			elasticsearch.WritePluginResultsToDatabase(elasticsearch.PluginResults{
+				ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
+				Name:     name,
+				Category: category,
+				Data:     structs.Map(fileInfo),
+			})
+
+			if c.Bool("table") {
+				printMarkDownTable(fileInfo)
+			} else {
+				fileInfoJSON, err := json.Marshal(fileInfo)
+				utils.Assert(err)
+				if c.Bool("post") {
+					request := gorequest.New()
+					if c.Bool("proxy") {
+						request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
+					}
+					request.Post(os.Getenv("MALICE_ENDPOINT")).
+						Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
+						Send(string(fileInfoJSON)).
+						End(printStatus)
+
+					return nil
+				}
+				// write to stdout
+				fmt.Println(string(fileInfoJSON))
+			}
+		} else {
+			log.Fatal(fmt.Errorf("Please supply a file to scan with malice/fileinfo"))
 		}
 		return nil
 	}
