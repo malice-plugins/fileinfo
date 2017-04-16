@@ -1,26 +1,16 @@
+REPO=malice
 NAME=fileinfo
 VERSION=$(shell cat VERSION)
-DEV_RUN_OPTS ?= /bin/cat
 
-dev:
-	docker build -f Dockerfile -t $(NAME):dev .
-	docker run --rm $(NAME):dev $(DEV_RUN_OPTS)
+all: build size test
 
 build:
-	docker build -t malice/$(NAME):$(VERSION) .
-	sed -i.bu 's/docker image-.*-blue/docker image-$(shell docker images --format "{{.Size}}" $(NAME):$(VERSION))-blue/g' README.md
+	docker build -t $(REPO)/$(NAME):$(VERSION) .
 
-release:
-	rm -rf release && mkdir release
-	go get github.com/progrium/gh-release/...
-	cp build/* release
-	gh-release create maliceio/malice-$(NAME) $(VERSION) \
-		$(shell git rev-parse --abbrev-ref HEAD) $(VERSION)
-	# glu hubtag maliceio/malice-$(NAME) $(VERSION)
+size: build
+	sed -i.bu 's/docker%20image-.*-blue/docker%20image-$(shell docker images --format "{{.Size}}" $(REPO)/$(NAME):$(BUILD)| cut -d' ' -f1)%20MB-blue/' README.md
 
-circleci:
-	rm -f ~/.gitconfig
-	go get -u github.com/gliderlabs/glu
-	glu circleci
+test:
+	docker run $(REPO)/$(NAME):$(VERSION) /bin/cat | jq .
 
-.PHONY: build release
+.PHONY: build release test
