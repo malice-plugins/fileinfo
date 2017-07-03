@@ -2,6 +2,11 @@ FROM debian:wheezy
 
 LABEL maintainer "https://github.com/blacktop"
 
+LABEL malice.plugin.repository = "https://github.com/malice-plugins/fileinfo.git"
+LABEL malice.plugin.category="metadata"
+LABEL malice.plugin.mime="*"
+LABEL malice.plugin.docker.engine="*"
+
 # Create a malice user and group first so the IDs get set the same way, even as
 # the rest of this may change over time.
 RUN groupadd -r malice && useradd -r -g malice malice
@@ -73,8 +78,8 @@ RUN buildDeps='ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.gnupg
 
-ENV GOLANG_VERSION 1.8.1
-ENV GOLANG_DOWNLOAD_SHA256 a579ab19d5237e263254f1eac5352efcf1d70b9dacadb6d6bb12b0911ede8994
+ENV GOLANG_VERSION 1.8.3
+ENV GOLANG_DOWNLOAD_SHA256 1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772
 
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \

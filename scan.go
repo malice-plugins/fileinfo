@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -15,7 +17,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/maliceio/go-plugin-utils/database/elasticsearch"
 	"github.com/maliceio/go-plugin-utils/utils"
-	"github.com/maliceio/malice/utils/clitable"
 	"github.com/parnurzeal/gorequest"
 	"github.com/rakyll/magicmime"
 	"github.com/urfave/cli"
@@ -52,6 +53,7 @@ type FileInfo struct {
 	SSDeep   string            `json:"ssdeep" structs:"ssdeep"`
 	TRiD     []string          `json:"trid" structs:"trid"`
 	Exiftool map[string]string `json:"exiftool" structs:"exiftool"`
+	MarkDown string            `json:"markdown,omitempty" structs:"markdown,omitempty"`
 }
 
 // GetFileMimeType returns the mime-type of a file path
@@ -207,42 +209,55 @@ func ParseTRiDOutput(tridout string, err error) []string {
 	return keepLines
 }
 
-func printMarkDownTable(finfo FileInfo) {
+// func printMarkDownTable(finfo FileInfo) {
+//
+// 	fmt.Println("#### Magic")
+// 	table := clitable.New([]string{"Field", "Value"})
+// 	table.AddRow(map[string]interface{}{"Field": "Mime", "Value": finfo.Magic.Mime})
+// 	table.AddRow(map[string]interface{}{"Field": "Description", "Value": finfo.Magic.Description})
+// 	table.Markdown = true
+// 	table.Print()
+// 	fmt.Println()
+//
+// 	if len(finfo.SSDeep) > 0 {
+// 		// print ssdeep
+// 		fmt.Println("#### SSDeep")
+// 		fmt.Println(finfo.SSDeep)
+// 		fmt.Println()
+// 	}
+//
+// 	if finfo.TRiD != nil {
+// 		// print trid
+// 		fmt.Println("#### TRiD")
+// 		for _, trd := range finfo.TRiD {
+// 			fmt.Println(" - ", trd)
+// 		}
+// 		fmt.Println()
+// 	}
+//
+// 	if finfo.Exiftool != nil {
+// 		// print exiftool
+// 		fmt.Println("#### Exiftool")
+// 		table := clitable.New([]string{"Field", "Value"})
+// 		for key, value := range finfo.Exiftool {
+// 			table.AddRow(map[string]interface{}{"Field": key, "Value": value})
+// 		}
+// 		table.Markdown = true
+// 		table.Print()
+// 	}
+// }
 
-	fmt.Println("#### Magic")
-	table := clitable.New([]string{"Field", "Value"})
-	table.AddRow(map[string]interface{}{"Field": "Mime", "Value": finfo.Magic.Mime})
-	table.AddRow(map[string]interface{}{"Field": "Description", "Value": finfo.Magic.Description})
-	table.Markdown = true
-	table.Print()
-	fmt.Println()
+func generateMarkDownTable(fi FileInfo) string {
+	var tplOut bytes.Buffer
 
-	if len(finfo.SSDeep) > 0 {
-		// print ssdeep
-		fmt.Println("#### SSDeep")
-		fmt.Println(finfo.SSDeep)
-		fmt.Println()
+	t := template.Must(template.New("fileinfo").Parse(tpl))
+
+	err := t.Execute(&tplOut, fi)
+	if err != nil {
+		log.Println("executing template:", err)
 	}
 
-	if finfo.TRiD != nil {
-		// print trid
-		fmt.Println("#### TRiD")
-		for _, trd := range finfo.TRiD {
-			fmt.Println(" - ", trd)
-		}
-		fmt.Println()
-	}
-
-	if finfo.Exiftool != nil {
-		// print exiftool
-		fmt.Println("#### Exiftool")
-		table := clitable.New([]string{"Field", "Value"})
-		for key, value := range finfo.Exiftool {
-			table.AddRow(map[string]interface{}{"Field": key, "Value": value})
-		}
-		table.Markdown = true
-		table.Print()
-	}
+	return tplOut.String()
 }
 
 func printStatus(resp gorequest.Response, body string, errs []error) {
@@ -401,6 +416,7 @@ func main() {
 				TRiD:     ParseTRiDOutput(utils.RunCommand(ctx, "trid", path)),
 				Exiftool: ParseExiftoolOutput(utils.RunCommand(ctx, "exiftool", path)),
 			}
+			fileInfo.MarkDown = generateMarkDownTable(fileInfo)
 
 			// upsert into Database
 			elasticsearch.InitElasticSearch(elastic)
@@ -412,8 +428,9 @@ func main() {
 			})
 
 			if c.Bool("table") {
-				printMarkDownTable(fileInfo)
+				fmt.Println(fileInfo.MarkDown)
 			} else {
+				fileInfo.MarkDown = ""
 				fileInfoJSON, err := json.Marshal(fileInfo)
 				utils.Assert(err)
 				if c.Bool("post") {
