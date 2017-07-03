@@ -22,10 +22,9 @@ func TestParseExiftool(t *testing.T) {
 	if true {
 		t.Log("results: ", results)
 	}
-
 }
 
-// TestParseVersion tests the GetFSecureVersion function.
+// TestParseTRiD tests the ParseTRiDOutput function.
 func TestParseTRiD(t *testing.T) {
 	b, err := ioutil.ReadFile("test/trid.out") // just pass the file name
 	if err != nil {
@@ -37,5 +36,18 @@ func TestParseTRiD(t *testing.T) {
 	if true {
 		t.Log("trid: ", trid)
 	}
+}
 
+// ParseSsdeepOutput tests the ParseSsdeepOutput function.
+func TestParseTRiDSsdeep(t *testing.T) {
+	b, err := ioutil.ReadFile("test/ssdeep.out") // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	ssdeep := ParseSsdeepOutput(string(b), nil)
+
+	if true {
+		t.Log("ssdeep: ", ssdeep)
+	}
 }
