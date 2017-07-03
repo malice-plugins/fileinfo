@@ -20,10 +20,10 @@ const tpl = `
 {{ end -}}
 {{- if .Exiftool}}
 #### Exiftool
-| Field       | Value            |
-|-------------|------------------|
-{{range $key, $value := .Exiftool}}
-| {{- $key }}  | {{ $value }}     |
-{{- end }}
+| Field       | Value                |
+|-------------|----------------------|
+{{- range $key, $value := .Exiftool }}
+| {{ $key }}  | {{ $value }}        |
+{{end}}
 {{end}}
 `
