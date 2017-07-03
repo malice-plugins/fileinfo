@@ -78,39 +78,11 @@ Sample Output
 }
 ```
 
+Or click here [results.json](https://github.com/maliceio/malice-fileinfo/blob/master/docs/results.json)
+
 ### Markdown:
 
----
-
-#### Magic
-
-| Field       | Value                                                                                                                                                                                                    |
-|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Mime        | application/x-executable                                                                                                                                                                                 |
-| Description | ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.26, BuildID[sha1]=8ffd894e500a9f125b32fa8a3f700f0f710961de, stripped |
-
-#### SSDeep
-
-768:C7tsNKQhyl96U9eJqaZ2e5ofMolkcksNmisf4BB5iqboecL027:DkXe1UHfM4N3sfezcL0
-
-#### TRiD
-
--	50.1% (.) ELF Executable and Linkable format (Linux) (4025/14)
--	49.8% (.O) ELF Executable and Linkable format (generic) (4000/1)
-
-#### Exiftool
-
-| Field                 | Value                    |
-|-----------------------|--------------------------|
-| CPUType               | AMD x86-64               |
-| FileSize              | 51 kB                    |
-| FileType              | ELF executable           |
-| FileTypeExtension     |                          |
-| ObjectFileType        | Executable file          |
-| CPUByteOrder          | Little endian            |
-| ExifToolVersionNumber | 10.25                    |
-| MIMEType              | application/octet-stream |
-| CPUArchitecture       | 64 bit                   |
+Click here [SAMPLE.md](https://github.com/maliceio/malice-fileinfo/blob/master/docs/SAMPLE.md)
 
 ---
 

@@ -1,7 +1,6 @@
 package main
 
-const tpl = `
-{{- if .Magic}}
+const tpl = `{{- if .Magic}}
 #### Magic
 | Field       | Value                  |
 |-------------|------------------------|
