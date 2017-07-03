@@ -1,7 +1,7 @@
 package main
 
 const tpl = `
-{{- if .Matches}}
+{{- if .Mime}}
 #### Magic
 | Field       | Value            |
 |-------------|------------------|
@@ -22,7 +22,7 @@ const tpl = `
 #### Exiftool
 | Field       | Value            |
 |-------------|------------------|
-{{ range $key, $value := .Exiftool }}
+{{range $key, $value := .Exiftool}}
 | {{ $key }}  | {{ $value }}     |
 {{end}}
 {{ end -}}
