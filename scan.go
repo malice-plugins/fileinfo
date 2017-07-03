@@ -291,6 +291,9 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 	defer os.Remove(tmpfile.Name()) // clean up
 
 	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if _, err = tmpfile.Write(data); err != nil {
 		log.Fatal(err)

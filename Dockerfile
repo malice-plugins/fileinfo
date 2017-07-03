@@ -110,7 +110,6 @@ RUN buildDeps='ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go /usr/local/go /root/.gnupg
 
-VOLUME ["/malware"]
 WORKDIR /malware
 
 ENTRYPOINT ["gosu","malice","tini","--","info"]

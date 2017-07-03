@@ -16,7 +16,7 @@ const tpl = `
 #### TRiD
 {{ range .TRiD }}
  - {{.}}
-{{end}}
+{{- end}}
 {{ end -}}
 {{- if .Exiftool}}
 #### Exiftool
@@ -24,6 +24,6 @@ const tpl = `
 |-------------|------------------|
 {{range $key, $value := .Exiftool}}
 | {{ $key }}  | {{ $value }}     |
+{{- end }}
 {{end}}
-{{ end -}}
 `
