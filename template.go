@@ -10,7 +10,7 @@ const tpl = `
 {{ end -}}
 {{- if .SSDeep}}
 #### SSDeep
- - {{.SSDeep}}
+ - ` + "`" + `{{.SSDeep}}` + "`" + `
 {{ end -}}
 {{- if .TRiD}}
 #### TRiD
