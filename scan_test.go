@@ -38,7 +38,7 @@ func TestParseTRiD(t *testing.T) {
 	}
 }
 
-// ParseSsdeepOutput tests the ParseSsdeepOutput function.
+// TestParseTRiDSsdeep tests the ParseSsdeepOutput function.
 func TestParseTRiDSsdeep(t *testing.T) {
 	b, err := ioutil.ReadFile("test/ssdeep.out") // just pass the file name
 	if err != nil {
@@ -49,5 +49,37 @@ func TestParseTRiDSsdeep(t *testing.T) {
 
 	if true {
 		t.Log("ssdeep: ", ssdeep)
+	}
+}
+
+// TestGenerateMarkDownTable tests the ParseSsdeepOutput function.
+func TestGenerateMarkDownTable(t *testing.T) {
+	exifOut, err := ioutil.ReadFile("test/exiftool.out")
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	tridOut, err := ioutil.ReadFile("test/trid.out")
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	ssdeepOut, err := ioutil.ReadFile("test/ssdeep.out")
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	fileInfo := FileInfo{
+		// Magic:    fi.Magic,
+		SSDeep:   ParseSsdeepOutput(string(ssdeepOut), nil),
+		TRiD:     ParseTRiDOutput(string(tridOut), nil),
+		Exiftool: ParseExiftoolOutput(string(exifOut), nil),
+	}
+	fileInfo.MarkDown = generateMarkDownTable(fileInfo)
+
+	markDown := generateMarkDownTable(fileInfo)
+
+	if true {
+		t.Log("markDown: ", markDown)
 	}
 }
