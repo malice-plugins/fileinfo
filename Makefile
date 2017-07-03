@@ -30,7 +30,6 @@ test:
 	docker run --init --rm -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -t sample > SAMPLE.md
 	docker run --init --rm -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V sample > results.json
 	cat results.json | jq .
-	# rm sample
 
 circle:
 	http https://circleci.com/api/v1.1/project/github/${REPO} | jq '.[0].build_num' > .circleci/build_num
@@ -38,6 +37,7 @@ circle:
 	sed -i.bu 's/docker%20image-.*-blue/docker%20image-$(shell cat .circleci/SIZE)-blue/' README.md
 
 clean:
+	rm sample
 	docker-clean stop
 	docker rmi $(ORG)/$(NAME)
 	docker rmi $(ORG)/$(NAME):$(BUILD)
