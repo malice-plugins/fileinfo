@@ -24,6 +24,6 @@ const tpl = `
 |-------------|----------------------|
 {{- range $key, $value := .Exiftool }}
 | {{ $key }}  | {{ $value }}        |
-{{end}}
+{{- end }}
 {{end}}
 `
