@@ -1,12 +1,12 @@
 package main
 
 const tpl = `
-{{- if .Mime}}
+{{- if .Magic}}
 #### Magic
-| Field       | Value            |
-|-------------|------------------|
-| Mime        | {{.Mime}}        |
-| Description | {{.Description}} |
+| Field       | Value                  |
+|-------------|------------------------|
+| Mime        | {{.Magic.Mime}}        |
+| Description | {{.Magic.Description}} |
 {{ end -}}
 {{- if .SSDeep}}
 #### SSDeep
