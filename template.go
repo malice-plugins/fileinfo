@@ -14,7 +14,7 @@ const tpl = `{{- if .Magic}}
 {{- if .TRiD}}
 #### TRiD
 {{ range .TRiD }}
- - {{- . }}
+ - {{- . }}  
 {{- end}}
 {{ end -}}
 {{- if .Exiftool}}
