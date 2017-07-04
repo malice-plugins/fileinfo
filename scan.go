@@ -82,9 +82,12 @@ func GetFileMimeType(ctx context.Context, path string) error {
 		fmt.Println("Cancel the context")
 		return ctx.Err()
 	case ok := <-c:
-		utils.Assert(ok.err)
+		if ok.err != nil {
+			fi.Magic.Mime = ok.err.Error()
+			return ok.err
+		}
 		fi.Magic.Mime = ok.mimetype
-		return ok.err
+		return nil
 	}
 }
 
@@ -114,9 +117,12 @@ func GetFileDescription(ctx context.Context, path string) error {
 		fmt.Println("Cancel the context")
 		return ctx.Err()
 	case ok := <-c:
-		utils.Assert(ok.err)
+		if ok.err != nil {
+			fi.Magic.Description = ok.err.Error()
+			return ok.err
+		}
 		fi.Magic.Description = ok.magicdesc
-		return ok.err
+		return nil
 	}
 }
 
@@ -386,6 +392,8 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) error {
+		var err error
+
 		if c.Bool("verbose") {
 			log.SetLevel(log.DebugLevel)
 		}
@@ -396,7 +404,7 @@ func main() {
 
 			path := c.Args().First()
 
-			if _, err := os.Stat(path); os.IsNotExist(err) {
+			if _, err = os.Stat(path); os.IsNotExist(err) {
 				utils.Assert(err)
 			}
 
@@ -404,13 +412,22 @@ func main() {
 				log.SetLevel(log.DebugLevel)
 			}
 
-			// run libmagic
-			GetFileMimeType(ctx, path)
-			GetFileDescription(ctx, path)
-
 			if c.Bool("mime") {
+				GetFileMimeType(ctx, path)
 				fmt.Println(fi.Magic.Mime)
 				return nil
+			}
+
+			// run libmagic
+			err = GetFileMimeType(ctx, path)
+			if err != nil && ctx.Err() == nil {
+				// try again
+				GetFileMimeType(ctx, path)
+			}
+			err = GetFileDescription(ctx, path)
+			if err != nil && ctx.Err() == nil {
+				// try again
+				GetFileDescription(ctx, path)
 			}
 
 			fileInfo := FileInfo{
