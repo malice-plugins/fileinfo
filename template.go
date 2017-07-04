@@ -1,7 +1,6 @@
 package main
 
-const tpl = `{{- if .Magic}}
-#### Magic
+const tpl = `{{ if .Magic}}#### Magic
 | Field       | Value                  |
 |-------------|------------------------|
 | Mime        | {{.Magic.Mime}}        |
@@ -13,10 +12,10 @@ const tpl = `{{- if .Magic}}
 {{ end -}}
 {{- if .TRiD}}
 #### TRiD
-{{ range .TRiD }}
- - {{- . }}  
-{{- end}}
-{{ end -}}
+{{ range .TRiD -}}
+ - {{ . }}
+{{end}}
+{{- end }}
 {{- if .Exiftool}}
 #### Exiftool
 | Field       | Value                |
@@ -24,5 +23,5 @@ const tpl = `{{- if .Magic}}
 {{- range $key, $value := .Exiftool }}
 | {{ $key }}  | {{ $value }}        |
 {{- end }}
-{{end}}
+{{- end }}
 `
