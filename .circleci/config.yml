@@ -53,7 +53,8 @@ jobs:
                        --name malvol \
                        blacktop/httpie --download https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408
             ls -lah /tmp
-            docker exec -it malvol sh -c "ls -lah /malware/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408"
+            ls -lah
+            docker exec -it malvol sh -c "ls -lah /malware"
             docker run --rm --volumes-from malvol app -V befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 | jq .
             docker run --rm --volumes-from malvol app -t befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408
       # - run:
