@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --no-cache jq curl
+            apk add --no-cache jq
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
@@ -47,8 +47,11 @@ jobs:
           name: Run tests
           command: |
             set -x
-            curl --help
-            docker run --init -d -v /malware -w /malware --name malvol blacktop/httpie --download https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 > /malware/sample
+            docker run --init -d \
+                       -v /tmp \
+                       -w /tmp \
+                       --name malvol \
+                       blacktop/httpie --download https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 > /tmp/sample
             docker run --rm --volumes-from malvol app -V sample | jq .
             docker run --rm --volumes-from malvol app -t sample
       # - run:
