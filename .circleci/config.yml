@@ -52,6 +52,8 @@ jobs:
                        -w /tmp \
                        --name malvol \
                        blacktop/httpie --download https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 > /tmp/sample
+            ls -lah /tmp/sample
+            docker exec -it malvol sh -c "ls -lah /tmp/sample"
             docker run --rm --volumes-from malvol app -V sample | jq .
             docker run --rm --volumes-from malvol app -t sample
       # - run:
