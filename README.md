@@ -25,7 +25,7 @@ Usage: fileinfo [OPTIONS] COMMAND [arg...]
 
 Malice File Info Plugin - ssdeep/TRiD/exiftool
 
-Version: v0.1.0, BuildTime: 20170211
+Version: v0.1.0, BuildTime: 20171110
 
 Author:
   blacktop - <https://github.com/blacktop>
