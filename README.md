@@ -1,7 +1,7 @@
 malice-fileinfo
 ===============
 
-[![Circle CI](https://circleci.com/gh/malice-plugins/fileinfo.png?style=shield)](https://circleci.com/gh/malice-plugins/fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker%20image-225MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
+[![Circle CI](https://circleci.com/gh/malice-plugins/fileinfo.png?style=shield)](https://circleci.com/gh/malice-plugins/fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker%20image-166MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
 
 Malice File Info Plugin (exiftool, TRiD and ssdeep)
 
@@ -9,7 +9,7 @@ This repository contains a **Dockerfile** of the FileInfo malice plugin **malice
 
 ### Dependencies
 
--	[debian:wheezy (*85 MB*\)](https://index.docker.io/_/debian/)
+-	[ubuntu:xenial (*122 MB*\)](https://index.docker.io/_/debian/)
 
 ### Installation
 

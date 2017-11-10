@@ -22,7 +22,7 @@
 | Comments  |         |
 | CompanyName  | Microsoft Corporation        |
 | EntryPoint  | 0x5a46        |
-| ExifToolVersionNumber  | 10.56        |
+| ExifToolVersionNumber  | 10.65        |
 | FileDescription  | Internet Explorer        |
 | FileFlags  | Private build        |
 | FileFlagsMask  | 0x003f        |

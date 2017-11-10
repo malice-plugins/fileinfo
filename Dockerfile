@@ -1,4 +1,4 @@
-FROM debian:wheezy
+FROM ubuntu:xenial
 
 LABEL maintainer "https://github.com/blacktop"
 
@@ -12,7 +12,6 @@ LABEL malice.plugin.docker.engine="*"
 RUN groupadd -r malice && useradd -r -g malice malice
 
 ENV GOSU_VERSION 1.10
-ENV TINI_VERSION v0.9.0
 
 RUN set -x \
   && apt-get update -qq \
@@ -27,21 +26,13 @@ RUN set -x \
   && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true \
-  && echo "Grab tini for signal processing and zombie killing..." \
-  && wget -O /usr/local/bin/tini "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" \
-  && wget -O /usr/local/bin/tini.asc "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini.asc" \
-  && export GNUPGHOME="$(mktemp -d)" \
-  && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 6380DC428747F6C393FEACA59A84159D7001A4E5 \
-  && gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini \
-  && rm -r "$GNUPGHOME" /usr/local/bin/tini.asc \
-  && chmod +x /usr/local/bin/tini \
-  && tini -h \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove ca-certificates wget \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV SSDEEP ssdeep-2.13
+ENV SSDEEP 2.14.1
+ENV EXIFTOOL 10.65
 
 RUN buildDeps='ca-certificates \
                build-essential \
@@ -49,10 +40,8 @@ RUN buildDeps='ca-certificates \
                unzip \
                curl' \
   && set -x \
-  && echo 'deb http://ftp.us.debian.org/debian/ testing main contrib non-free' >> /etc/apt/sources.list \
   && apt-get update -qq \
-  && apt-get install -t testing libc6 \
-  && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libimage-exiftool-perl \
+  && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libc6 \
   && mkdir /malware \
   && chown -R malice:malice /malware \
   && echo "Downloading TRiD and Database..." \
@@ -65,21 +54,30 @@ RUN buildDeps='ca-certificates \
   && mv trid /usr/bin/ \
   && mv triddefs.trd /usr/bin/ \
   && echo "Installing ssdeep..." \
-  && curl -Ls https://downloads.sourceforge.net/project/ssdeep/$SSDEEP/$SSDEEP.tar.gz > \
-    /tmp/$SSDEEP.tar.gz \
+  && curl -Ls https://github.com/ssdeep-project/ssdeep/releases/download/release-$SSDEEP/ssdeep-$SSDEEP.tar.gz > \
+    /tmp/ssdeep-$SSDEEP.tar.gz \
   && cd /tmp \
-  && tar zxvf $SSDEEP.tar.gz \
-  && cd $SSDEEP \
+  && tar xzf ssdeep-$SSDEEP.tar.gz \
+  && cd ssdeep-$SSDEEP \
   && ./configure \
   && make \
+  && make install \
+  && echo "Installing exiftool..." \
+  && curl -Ls https://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-$EXIFTOOL.tar.gz > \
+    /tmp/exiftool.tar.gz \
+  && cd /tmp \
+  && tar xzf exiftool.tar.gz \
+  && cd Image-ExifTool-$EXIFTOOL \
+  && perl Makefile.PL \
+  && make test \
   && make install \
   && echo "Clean up unnecessary files..." \
   && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.gnupg
 
-ENV GOLANG_VERSION 1.8.3
-ENV GOLANG_DOWNLOAD_SHA256 1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772
+ENV GOLANG_VERSION 1.9.2
+ENV GOLANG_DOWNLOAD_SHA256 de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b
 
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \
@@ -106,11 +104,11 @@ RUN buildDeps='ca-certificates \
   && go get \
   && go build -ldflags "-X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
   && echo "Clean up unnecessary files..." \
-  && apt-get purge -y --auto-remove $buildDeps \
   && apt-get clean \
+  && apt-get purge -y --auto-remove --allow-remove-essential $buildDeps \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go /usr/local/go /root/.gnupg
 
 WORKDIR /malware
 
-ENTRYPOINT ["gosu","malice","tini","--","info"]
+ENTRYPOINT ["gosu","malice","info"]
 CMD ["--help"]
