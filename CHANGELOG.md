@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - updated exiftool
-- updated to ubuntu bionic
 - updated to golang 1.10.3
 - fixed mime DB race condition
 

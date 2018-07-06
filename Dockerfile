@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:xenial
 
 LABEL maintainer "https://github.com/blacktop"
 

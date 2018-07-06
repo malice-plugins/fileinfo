@@ -8,7 +8,7 @@ This repository contains a **Dockerfile** of the FileInfo malice plugin **malice
 
 ### Dependencies
 
-- [ubuntu:bionic (_122 MB_\)](https://index.docker.io/_/debian/)
+- [ubuntu:xenial (_122 MB_\)](https://index.docker.io/_/debian/)
 
 ### Installation
 
