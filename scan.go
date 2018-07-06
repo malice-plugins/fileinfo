@@ -59,71 +59,33 @@ type FileInfo struct {
 // GetFileMimeType returns the mime-type of a file path
 func GetFileMimeType(ctx context.Context, path string) error {
 
-	c := make(chan struct {
-		mimetype string
-		err      error
-	}, 1)
+	utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
+	defer magicmime.Close()
 
-	go func() {
-		utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
-		defer magicmime.Close()
-
-		mt, err := magicmime.TypeByFile(path)
-		pack := struct {
-			mimetype string
-			err      error
-		}{mt, err}
-		c <- pack
-	}()
-
-	select {
-	case <-ctx.Done():
-		<-c // Wait for mime
-		fmt.Println("Cancel the context")
-		return ctx.Err()
-	case ok := <-c:
-		if ok.err != nil {
-			fi.Magic.Mime = ok.err.Error()
-			return ok.err
-		}
-		fi.Magic.Mime = ok.mimetype
-		return nil
+	mimetype, err := magicmime.TypeByFile(path)
+	if err != nil {
+		fi.Magic.Mime = err.Error()
+		return err
 	}
+
+	fi.Magic.Mime = mimetype
+	return nil
 }
 
 // GetFileDescription returns the textual libmagic type of a file path
 func GetFileDescription(ctx context.Context, path string) error {
 
-	c := make(chan struct {
-		magicdesc string
-		err       error
-	}, 1)
+	utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
+	defer magicmime.Close()
 
-	go func() {
-		utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
-		defer magicmime.Close()
-
-		magicdesc, err := magicmime.TypeByFile(path)
-		pack := struct {
-			magicdesc string
-			err       error
-		}{magicdesc, err}
-		c <- pack
-	}()
-
-	select {
-	case <-ctx.Done():
-		<-c // Wait for mime
-		fmt.Println("Cancel the context")
-		return ctx.Err()
-	case ok := <-c:
-		if ok.err != nil {
-			fi.Magic.Description = ok.err.Error()
-			return ok.err
-		}
-		fi.Magic.Description = ok.magicdesc
-		return nil
+	magicdesc, err := magicmime.TypeByFile(path)
+	if err != nil {
+		fi.Magic.Description = err.Error()
+		return err
 	}
+
+	fi.Magic.Description = magicdesc
+	return nil
 }
 
 // ParseExiftoolOutput convert exiftool output into JSON

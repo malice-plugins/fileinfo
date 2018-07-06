@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 LABEL maintainer "https://github.com/blacktop"
 
@@ -12,33 +12,47 @@ LABEL malice.plugin.docker.engine="*"
 RUN groupadd -r malice && useradd -r -g malice malice
 
 ENV GOSU_VERSION 1.10
-
-RUN set -x \
-  && apt-get update -qq \
-  && apt-get install -y ca-certificates wget \
-  && echo "Grab gosu for easy step-down from root..." \
-  && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
-  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch" \
-  && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc" \
-  && export GNUPGHOME="$(mktemp -d)" \
-  && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-  && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-  && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
-  && chmod +x /usr/local/bin/gosu \
-  && gosu nobody true \
-  && echo "Clean up unnecessary files..." \
-  && apt-get purge -y --auto-remove ca-certificates wget \
+RUN set -ex; \
+  \
+  fetchDeps=' \
+  ca-certificates \
+  dirmngr \
+  wget \
+  '; \
+  apt-get update; \
+  apt-get install -y --no-install-recommends $fetchDeps; \
+  rm -rf /var/lib/apt/lists/*; \
+  \
+  dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+  wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
+  wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
+  \
+  # verify the signature
+  export GNUPGHOME="$(mktemp -d)"; \
+  export GPG_KEYS=B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+  ( gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEYS" \
+  || gpg --keyserver pgp.mit.edu --recv-keys "$GPG_KEYS" \
+  || gpg --keyserver keyserver.pgp.com --recv-keys "$GPG_KEYS" ); \
+  gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
+  rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc; \
+  \
+  chmod +x /usr/local/bin/gosu; \
+  # verify that the binary works
+  gosu nobody true; \
+  \
+  echo "Clean up unnecessary files..." \
+  && apt-get purge -y --auto-remove $fetchDeps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV SSDEEP 2.14.1
-ENV EXIFTOOL 10.65
+ENV EXIFTOOL 11.06
 
 RUN buildDeps='ca-certificates \
-               build-essential \
-               openssl \
-               unzip \
-               curl' \
+  build-essential \
+  openssl \
+  unzip \
+  curl' \
   && set -x \
   && apt-get update -qq \
   && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libc6 \
@@ -55,7 +69,7 @@ RUN buildDeps='ca-certificates \
   && mv triddefs.trd /usr/bin/ \
   && echo "Installing ssdeep..." \
   && curl -Ls https://github.com/ssdeep-project/ssdeep/releases/download/release-$SSDEEP/ssdeep-$SSDEEP.tar.gz > \
-    /tmp/ssdeep-$SSDEEP.tar.gz \
+  /tmp/ssdeep-$SSDEEP.tar.gz \
   && cd /tmp \
   && tar xzf ssdeep-$SSDEEP.tar.gz \
   && cd ssdeep-$SSDEEP \
@@ -64,7 +78,7 @@ RUN buildDeps='ca-certificates \
   && make install \
   && echo "Installing exiftool..." \
   && curl -Ls https://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-$EXIFTOOL.tar.gz > \
-    /tmp/exiftool.tar.gz \
+  /tmp/exiftool.tar.gz \
   && cd /tmp \
   && tar xzf exiftool.tar.gz \
   && cd Image-ExifTool-$EXIFTOOL \
@@ -76,17 +90,17 @@ RUN buildDeps='ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.gnupg
 
-ENV GOLANG_VERSION 1.9.2
-ENV GOLANG_DOWNLOAD_SHA256 de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b
+ENV GOLANG_VERSION 1.10.3
+ENV GOLANG_DOWNLOAD_SHA256 fa1b0e45d3b647c252f51f5e1204aba049cde4af177ef9f2181f43004f901035
 
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 RUN buildDeps='ca-certificates \
-               build-essential \
-               mercurial \
-               git-core \
-               openssl \
-               gnupg \
-               curl' \
+  build-essential \
+  mercurial \
+  git-core \
+  openssl \
+  gnupg \
+  curl' \
   && set -x \
   && apt-get update -qq \
   && apt-get install -yq --no-install-recommends $buildDeps \

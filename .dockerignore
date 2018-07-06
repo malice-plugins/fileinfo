@@ -1,10 +1,10 @@
 # Ignore .git folder
 .git*
+.gitignore
 
 LICENSE
 Makefile
-README.md
-README.md.bu
+README*
 VERSION
 build
 circle.yml
@@ -17,3 +17,4 @@ SAMPLE.md
 NOTES.md
 results.json
 sample
+.circleci/*

@@ -1,16 +1,19 @@
-Change Log
-==========
+# Change Log
 
 All notable changes to this project will be documented in this file.
 
-[v0.1.0] - 2016-11-11
----------------------
+## [v0.1.0] - 2016-11-11
 
 ### Fixed
 
+- updated exiftool
+- updated to ubuntu bionic
+- updated to golang 1.10.3
+- fixed mime DB race condition
+
 ### Added
 
--	Timeouts to protect against bad files  
+- Timeouts to protect against bad files
 
 ### Removed
 

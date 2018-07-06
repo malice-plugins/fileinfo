@@ -5,11 +5,11 @@
   },
   "ssdeep": "768:15jQ4nVHQaeO379u4XckKVCsknBN9A4hUnDxDiNZ957ZpK0IUUiM95Zdz:15jQ4nVHQaeO9uwckKuBN9A4UnDxcbFi",
   "trid": [
-    "31.0% (.EXE) Win32 Executable MS Visual C++ (generic) (31206/45/13)",
-    "27.4% (.EXE) Win64 Executable (generic) (27625/18/4)",
-    "26.4% (.EXE) Win32 EXE Yoda's Crypter (26569/9/4)",
-    "6.5% (.DLL) Win32 Dynamic Link Library (generic) (6578/25/2)",
-    "4.4% (.EXE) Win32 Executable (generic) (4508/7/1)"
+    "30.4% (.EXE) Win32 Executable MS Visual C++ (generic) (31206/45/13)",
+    "26.9% (.EXE) Win64 Executable (generic) (27625/18/4)",
+    "25.9% (.EXE) Win32 EXE Yoda's Crypter (26569/9/4)",
+    "6.4% (.DLL) Win32 Dynamic Link Library (generic) (6578/25/2)",
+    "4.3% (.EXE) Win32 Executable (generic) (4508/7/1)"
   ],
   "exiftool": {
     "CharacterSet": "Unicode",
