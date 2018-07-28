@@ -1,4 +1,4 @@
-# malice-fileinfo
+# fileinfo
 
 [![Circle CI](https://circleci.com/gh/malice-plugins/fileinfo.png?style=shield)](https://circleci.com/gh/malice-plugins/fileinfo) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/fileinfo.svg)](https://hub.docker.com/r/malice/fileinfo/) [![Docker Image](https://img.shields.io/badge/docker%20image-197MB-blue.svg)](https://hub.docker.com/r/malice/fileinfo/)
 
@@ -49,7 +49,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 
 ## Sample Output
 
-### [JSON](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/results.json)
+### [JSON](https://github.com/malice-plugins/fileinfo/blob/master/docs/results.json)
 
 ```json
 {
@@ -78,7 +78,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 }
 ```
 
-### [Markdown](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/SAMPLE.md)
+### [Markdown](https://github.com/malice-plugins/fileinfo/blob/master/docs/SAMPLE.md)
 
 #### Magic
 
@@ -116,23 +116,23 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 
 ## Documentation
 
-- [To write results to ElasticSearch](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/elasticsearch.md)
-- [To create a File Info micro-service](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/web.md)
-- [To post results to a webhook](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/callback.md)
+- [To write results to ElasticSearch](https://github.com/malice-plugins/fileinfo/blob/master/docs/elasticsearch.md)
+- [To create a File Info micro-service](https://github.com/malice-plugins/fileinfo/blob/master/docs/web.md)
+- [To post results to a webhook](https://github.com/malice-plugins/fileinfo/blob/master/docs/callback.md)
 
 ### Issues
 
-Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/malice-plugins/malice-fileinfo/issues/new)
+Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/malice-plugins/fileinfo/issues/new)
 
 ### CHANGELOG
 
-See [`CHANGELOG.md`](https://github.com/malice-plugins/malice-fileinfo/blob/master/CHANGELOG.md)
+See [`CHANGELOG.md`](https://github.com/malice-plugins/fileinfo/blob/master/CHANGELOG.md)
 
 ### Contributing
 
-[See all contributors on GitHub](https://github.com/malice-plugins/malice-fileinfo/graphs/contributors).
+[See all contributors on GitHub](https://github.com/malice-plugins/fileinfo/graphs/contributors).
 
-Please update the [CHANGELOG.md](https://github.com/malice-plugins/malice-fileinfo/blob/master/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
+Please update the [CHANGELOG.md](https://github.com/malice-plugins/fileinfo/blob/master/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
 
 ### License
 
