@@ -49,7 +49,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 
 ## Sample Output
 
-### JSON:
+### [JSON](https://github.com/maliceio/malice-fileinfo/blob/master/docs/results.json)
 
 ```json
 {
@@ -78,11 +78,39 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 }
 ```
 
-Or click here [results.json](https://github.com/maliceio/malice-fileinfo/blob/master/docs/results.json)
+### [Markdown](https://github.com/maliceio/malice-fileinfo/blob/master/docs/SAMPLE.md)
 
-### Markdown:
+#### Magic
 
-Click here [SAMPLE.md](https://github.com/maliceio/malice-fileinfo/blob/master/docs/SAMPLE.md)
+| Field       | Value                                             |
+| ----------- | ------------------------------------------------- |
+| Mime        | application/x-dosexec                             |
+| Description | PE32 executable (GUI) Intel 80386, for MS Windows |
+
+#### SSDeep
+
+- `768:15jQ4nVHQaeO379u4XckKVCsknBN9A4hUnDxDiNZ957ZpK0IUUiM95Zdz:15jQ4nVHQaeO9uwckKuBN9A4UnDxcbFi`
+
+#### TRiD
+
+- 30.4% (.EXE) Win32 Executable MS Visual C&#43;&#43; (generic) (31206/45/13)
+- 26.9% (.EXE) Win64 Executable (generic) (27625/18/4)
+- 25.9% (.EXE) Win32 EXE Yoda&#39;s Crypter (26569/9/4)
+- 6.4% (.DLL) Win32 Dynamic Link Library (generic) (6578/25/2)
+- 4.3% (.EXE) Win32 Executable (generic) (4508/7/1)
+
+#### Exiftool
+
+| Field                 | Value                 |
+| --------------------- | --------------------- |
+| CharacterSet          | Unicode               |
+| CodeSize              | 20480                 |
+| Comments              |                       |
+| CompanyName           | Microsoft Corporation |
+| EntryPoint            | 0x5a46                |
+| ExifToolVersionNumber | 11.06                 |
+
+...<SNIP>...
 
 ---
 
