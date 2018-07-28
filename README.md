@@ -110,7 +110,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 | EntryPoint            | 0x5a46                |
 | ExifToolVersionNumber | 11.06                 |
 
-...<SNIP>...
+...`SNIP`...
 
 ---
 
