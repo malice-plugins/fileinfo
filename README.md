@@ -49,7 +49,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 
 ## Sample Output
 
-### [JSON](https://github.com/maliceio/malice-fileinfo/blob/master/docs/results.json)
+### [JSON](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/results.json)
 
 ```json
 {
@@ -78,7 +78,7 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 }
 ```
 
-### [Markdown](https://github.com/maliceio/malice-fileinfo/blob/master/docs/SAMPLE.md)
+### [Markdown](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/SAMPLE.md)
 
 #### Magic
 
@@ -116,23 +116,23 @@ Run 'fileinfo COMMAND --help' for more information on a command.
 
 ## Documentation
 
-- [To write results to ElasticSearch](https://github.com/maliceio/malice-fileinfo/blob/master/docs/elasticsearch.md)
-- [To create a File Info micro-service](https://github.com/maliceio/malice-fileinfo/blob/master/docs/web.md)
-- [To post results to a webhook](https://github.com/maliceio/malice-fileinfo/blob/master/docs/callback.md)
+- [To write results to ElasticSearch](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/elasticsearch.md)
+- [To create a File Info micro-service](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/web.md)
+- [To post results to a webhook](https://github.com/malice-plugins/malice-fileinfo/blob/master/docs/callback.md)
 
 ### Issues
 
-Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/maliceio/malice-fileinfo/issues/new)
+Find a bug? Want more features? Find something missing in the documentation? Let me know! Please don't hesitate to [file an issue](https://github.com/malice-plugins/malice-fileinfo/issues/new)
 
 ### CHANGELOG
 
-See [`CHANGELOG.md`](https://github.com/maliceio/malice-fileinfo/blob/master/CHANGELOG.md)
+See [`CHANGELOG.md`](https://github.com/malice-plugins/malice-fileinfo/blob/master/CHANGELOG.md)
 
 ### Contributing
 
-[See all contributors on GitHub](https://github.com/maliceio/malice-fileinfo/graphs/contributors).
+[See all contributors on GitHub](https://github.com/malice-plugins/malice-fileinfo/graphs/contributors).
 
-Please update the [CHANGELOG.md](https://github.com/maliceio/malice-fileinfo/blob/master/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
+Please update the [CHANGELOG.md](https://github.com/malice-plugins/malice-fileinfo/blob/master/CHANGELOG.md) and submit a [Pull Request on GitHub](https://help.github.com/articles/using-pull-requests/).
 
 ### License
 

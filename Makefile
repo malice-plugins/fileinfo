@@ -68,7 +68,7 @@ test: malware
 	cat docs/results.json | jq .
 
 .PHONY: test_elastic
-test_elastic: start_elasticsearch
+test_elastic: start_elasticsearch malware
 	@echo "===> ${NAME} test_elastic found"
 	docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH=elasticsearch -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(MALWARE)
 	# @echo "===> ${NAME} test_elastic NOT found"
