@@ -1,45 +1,107 @@
 REPO=malice-plugins/fileinfo
 ORG=malice
 NAME=fileinfo
+CATEGORY=metadata
 VERSION=$(shell cat VERSION)
+MALWARE=test/malware
 
-all: build size test
+all: build size tag test test_markdown
 
+.PHONY: build
 build:
-	docker build -t $(ORG)/$(NAME):$(VERSION) .
+	cd $(VERSION); docker build -t $(ORG)/$(NAME):$(VERSION) .
 
+.PHONY: size
 size:
 	sed -i.bu 's/docker%20image-.*-blue/docker%20image-$(shell docker images --format "{{.Size}}" $(ORG)/$(NAME):$(VERSION)| cut -d' ' -f1)-blue/' README.md
 
-tar: build
-	docker save $(ORG)/$(NAME):$(VERSION) -o wdef.tar
+.PHONY: tag
+tag:
+	docker tag $(ORG)/$(NAME):$(VERSION) $(ORG)/$(NAME):latest
 
+.PHONY: tags
+tags:
+	docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" $(ORG)/$(NAME)
+
+.PHONY: ssh
+ssh:
+	@docker run --init -it --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION)
+
+.PHONY: tar
+tar:
+	docker save $(ORG)/$(NAME):$(VERSION) -o $(NAME).tar
+
+.PHONY: go-test
 go-test:
 	go get
 	go test -v
 
+.PHONY: fi-test
 fi-test: test
 	@echo "===> FileInfo sample Test"
 	@docker run --init --rm -v $(PWD):/malware --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "ssdeep sample" > test/ssdeep.out || true
 	@docker run --init --rm -v $(PWD):/malware --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "trid sample" > test/trid.out || true
 	@docker run --init --rm -v $(PWD):/malware --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "exiftool sample" > test/exiftool.out || true
 
-test:
+.PHONY: start_elasticsearch
+start_elasticsearch:
+ifeq ("$(shell docker inspect -f {{.State.Running}} elasticsearch)", "true")
+	@echo "===> elasticsearch already running"
+else
+	@echo "===> Starting elasticsearch"
+	@docker rm -f elasticsearch || true
+	@docker run --init -d --name elasticsearch -p 9200:9200 malice/elasticsearch:6.3; sleep 10
+endif
+
+.PHONY: malware
+malware:
+ifeq (,$(wildcard test/malware))
+	wget https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 -O $(MALWARE)
+	cd test; echo "TEST" > not.malware
+endif
+
+.PHONY: test
+test: malware
+	@echo "===> ${NAME} --help"
 	docker run --init --rm $(ORG)/$(NAME):$(VERSION) --help
-	test -f sample || wget https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 -O sample
-	docker run --init --rm -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -t sample > docs/SAMPLE.md
-	docker run --init --rm -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V sample | jq . > docs/results.json
+	docker run --init --rm -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(MALWARE) | jq . > docs/results.json
 	cat docs/results.json | jq .
 
-circle:
-	http https://circleci.com/api/v1.1/project/github/${REPO} | jq '.[0].build_num' > .circleci/build_num
-	http "$(shell http https://circleci.com/api/v1.1/project/github/${REPO}/$(shell cat .circleci/build_num)/artifacts${CIRCLE_TOKEN} | jq '.[].url')" > .circleci/SIZE
-	sed -i.bu 's/docker%20image-.*-blue/docker%20image-$(shell cat .circleci/SIZE)-blue/' README.md
+.PHONY: test_elastic
+test_elastic: start_elasticsearch
+	@echo "===> ${NAME} test_elastic found"
+	docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH=elasticsearch -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(MALWARE)
+	# @echo "===> ${NAME} test_elastic NOT found"
+	# docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH=elasticsearch $(ORG)/$(NAME):$(VERSION) -V --api ${MALICE_VT_API} lookup $(MISSING_HASH)
+	http localhost:9200/malice/_search | jq . > docs/elastic.json
+
+.PHONY: test_markdown
+test_markdown: test_elastic
+	@echo "===> ${NAME} test_markdown"
+	# http localhost:9200/malice/_search query:=@docs/query.json | jq . > docs/elastic.json
+	cat docs/elastic.json | jq -r '.hits.hits[] ._source.plugins.${CATEGORY}.${NAME}.markdown' > docs/SAMPLE.md
+
+.PHONY: circle
+circle: ci-size
+	@sed -i.bu 's/docker%20image-.*-blue/docker%20image-$(shell cat .circleci/size)-blue/' README.md
+	@echo "===> Image size is: $(shell cat .circleci/size)"
+
+ci-build:
+	@echo "===> Getting CircleCI build number"
+	@http https://circleci.com/api/v1.1/project/github/${REPO} | jq '.[0].build_num' > .circleci/build_num
+
+ci-size: ci-build
+	@echo "===> Getting artifact sizes from CircleCI"
+	@cd .circleci; rm size nsrl bloom || true
+	@http https://circleci.com/api/v1.1/project/github/${REPO}/$(shell cat .circleci/build_num)/artifacts${CIRCLE_TOKEN} | jq -r ".[] | .url" | xargs wget -q -P .circleci
 
 clean:
-	rm sample
+	rm -rf test
 	docker-clean stop
-	docker rmi $(ORG)/$(NAME)
-	docker rmi $(ORG)/$(NAME):$(BUILD)
+	docker image rm $(ORG)/$(NAME):$(VERSION)
 
-.PHONY: build size tags test fi-test go-test tar circle clean
+# Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := all

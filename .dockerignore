@@ -2,6 +2,11 @@
 .git*
 .gitignore
 
+.circleci*
+docs*
+vendor*
+test*
+
 LICENSE
 Makefile
 README*
@@ -10,11 +15,8 @@ build
 circle.yml
 docker-compose.yml
 CHANGELOG.md
-docs/*
-test/*
 scan_test.go
 SAMPLE.md
 NOTES.md
 results.json
 sample
-.circleci/*

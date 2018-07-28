@@ -115,7 +115,8 @@ RUN buildDeps='ca-certificates \
   && cd /go/src/github.com/maliceio/malice-fileinfo \
   && export GOPATH=/go \
   && go version \
-  && go get \
+  && go get -u github.com/golang/dep/cmd/dep \
+  && /go/bin/dep ensure \
   && go build -ldflags "-X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
   && echo "Clean up unnecessary files..." \
   && apt-get clean \
