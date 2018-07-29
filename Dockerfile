@@ -117,7 +117,7 @@ RUN buildDeps='ca-certificates \
   && go version \
   && go get -u github.com/golang/dep/cmd/dep \
   && /go/bin/dep ensure \
-  && go build -ldflags "-X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
+  && go build -ldflags "-s -w -X main.Version=$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
   && echo "Clean up unnecessary files..." \
   && apt-get clean \
   && apt-get purge -y --auto-remove --allow-remove-essential $buildDeps \
