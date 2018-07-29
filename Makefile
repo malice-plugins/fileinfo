@@ -96,9 +96,9 @@ ci-size: ci-build
 	@http https://circleci.com/api/v1.1/project/github/${REPO}/$(shell cat .circleci/build_num)/artifacts${CIRCLE_TOKEN} | jq -r ".[] | .url" | xargs wget -q -P .circleci
 
 clean:
-	rm -rf test
 	docker-clean stop
 	docker image rm $(ORG)/$(NAME):$(VERSION)
+	rm $(MALWARE)
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
