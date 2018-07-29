@@ -9,7 +9,7 @@ all: build size tag test test_markdown
 
 .PHONY: build
 build:
-	cd $(VERSION); docker build -t $(ORG)/$(NAME):$(VERSION) .
+	docker build -t $(ORG)/$(NAME):$(VERSION) .
 
 .PHONY: size
 size:
