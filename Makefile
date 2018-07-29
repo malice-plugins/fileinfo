@@ -98,6 +98,7 @@ ci-size: ci-build
 clean:
 	docker-clean stop
 	docker image rm $(ORG)/$(NAME):$(VERSION)
+	docker image rm $(ORG)/$(NAME):latest
 	rm $(MALWARE)
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
