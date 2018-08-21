@@ -65,9 +65,6 @@ type FileInfo struct {
 // GetFileMimeType returns the mime-type of a file path
 func GetFileMimeType(ctx context.Context, path string) error {
 
-	mut.Lock()
-	defer mut.Unlock()
-
 	utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
 	defer magicmime.Close()
 
@@ -83,9 +80,6 @@ func GetFileMimeType(ctx context.Context, path string) error {
 
 // GetFileDescription returns the textual libmagic type of a file path
 func GetFileDescription(ctx context.Context, path string) error {
-
-	mut.Lock()
-	defer mut.Unlock()
 
 	utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
 	defer magicmime.Close()
@@ -292,6 +286,8 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Do FileInfo scan
+	mut.Lock()
+	defer mut.Unlock()
 	path := tmpfile.Name()
 	GetFileMimeType(ctx, path)
 	GetFileDescription(ctx, path)
