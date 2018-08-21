@@ -34,7 +34,7 @@ var (
 
 	fi FileInfo
 
-	mut sync.Mutex
+	mtx sync.Mutex
 )
 
 const (
@@ -286,8 +286,8 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Do FileInfo scan
-	mut.Lock()
-	defer mut.Unlock()
+	mtx.Lock()
+	defer mtx.Unlock()
 	path := tmpfile.Name()
 	GetFileMimeType(ctx, path)
 	GetFileDescription(ctx, path)
