@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -32,6 +33,8 @@ var (
 	BuildTime string
 
 	fi FileInfo
+
+	mut sync.Mutex
 )
 
 const (
@@ -62,6 +65,9 @@ type FileInfo struct {
 // GetFileMimeType returns the mime-type of a file path
 func GetFileMimeType(ctx context.Context, path string) error {
 
+	mut.Lock()
+	defer mut.Unlock()
+
 	utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
 	defer magicmime.Close()
 
@@ -77,6 +83,9 @@ func GetFileMimeType(ctx context.Context, path string) error {
 
 // GetFileDescription returns the textual libmagic type of a file path
 func GetFileDescription(ctx context.Context, path string) error {
+
+	mut.Lock()
+	defer mut.Unlock()
 
 	utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
 	defer magicmime.Close()
@@ -261,7 +270,7 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("Uploaded fileName: ", header.Filename)
 
-	tmpfile, err := ioutil.TempFile("/malware", "web_"+getMD5(header.Filename))
+	tmpfile, err := ioutil.TempFile("/malware", "web_")
 	if err != nil {
 		log.Fatal(err)
 	}
