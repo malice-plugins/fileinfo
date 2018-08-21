@@ -34,8 +34,7 @@ var (
 
 	fi FileInfo
 
-	// decMu and dec are used for the package level functions.
-	decMu sync.Mutex
+	mut sync.Mutex
 )
 
 const (
@@ -66,8 +65,8 @@ type FileInfo struct {
 // GetFileMimeType returns the mime-type of a file path
 func GetFileMimeType(ctx context.Context, path string) error {
 
-	decMu.Lock()
-	defer decMu.Unlock()
+	mut.Lock()
+	defer mut.Unlock()
 
 	utils.Assert(magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
 	defer magicmime.Close()
@@ -85,8 +84,8 @@ func GetFileMimeType(ctx context.Context, path string) error {
 // GetFileDescription returns the textual libmagic type of a file path
 func GetFileDescription(ctx context.Context, path string) error {
 
-	decMu.Lock()
-	defer decMu.Unlock()
+	mut.Lock()
+	defer mut.Unlock()
 
 	utils.Assert(magicmime.Open(magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR))
 	defer magicmime.Close()
