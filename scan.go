@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -241,6 +242,12 @@ func webService() {
 	log.Fatal(http.ListenAndServe(":3993", router))
 }
 
+func getMD5(text string) string {
+	hMD5 := md5.New()
+	_, _ = hMD5.Write([]byte(text))
+	return fmt.Sprintf("%x", hMD5.Sum(nil))
+}
+
 func webAvScan(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseMultipartForm(32 << 20)
@@ -254,7 +261,7 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("Uploaded fileName: ", header.Filename)
 
-	tmpfile, err := ioutil.TempFile("/malware", "web_"+utils.GetSHA256(header.Filename))
+	tmpfile, err := ioutil.TempFile("/malware", "web_"+getMD5(header.Filename))
 	if err != nil {
 		log.Fatal(err)
 	}

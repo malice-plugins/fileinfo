@@ -5,7 +5,7 @@ CATEGORY=metadata
 VERSION=$(shell cat VERSION)
 MALWARE=test/malware
 
-all: build size tag test test_markdown
+all: build size tag test test_markdown test_web
 
 .PHONY: build
 build:
@@ -80,6 +80,19 @@ test_markdown: test_elastic
 	@echo "===> ${NAME} test_markdown"
 	# http localhost:9200/malice/_search query:=@docs/query.json | jq . > docs/elastic.json
 	cat docs/elastic.json | jq -r '.hits.hits[] ._source.plugins.${CATEGORY}.${NAME}.markdown' > docs/SAMPLE.md
+
+.PHONY: test_web
+test_web: malware stop
+	@echo "===> Starting web service"
+	@docker run -d --name $(NAME) -p 3993:3993 $(ORG)/$(NAME):$(VERSION) web
+	sleep 10; http -f localhost:3993/scan malware@test/malware
+	@echo "===> Stopping web service"
+	@docker logs $(NAME)
+	@docker rm -f $(NAME)
+
+.PHONY: stop
+stop: ## Kill running docker containers
+	@docker rm -f $(NAME) || true
 
 .PHONY: circle
 circle: ci-size
