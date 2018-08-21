@@ -254,7 +254,7 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("Uploaded fileName: ", header.Filename)
 
-	tmpfile, err := ioutil.TempFile("/malware", "web_")
+	tmpfile, err := ioutil.TempFile("/malware", "web_"+utils.GetSHA256(header.Filename))
 	if err != nil {
 		log.Fatal(err)
 	}
