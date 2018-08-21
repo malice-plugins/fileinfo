@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -32,6 +33,8 @@ var (
 	BuildTime string
 
 	fi FileInfo
+
+	mtx sync.Mutex
 )
 
 const (
@@ -261,7 +264,7 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("Uploaded fileName: ", header.Filename)
 
-	tmpfile, err := ioutil.TempFile("/malware", "web_"+getMD5(header.Filename))
+	tmpfile, err := ioutil.TempFile("/malware", "web_")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -283,6 +286,8 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	// Do FileInfo scan
+	mtx.Lock()
+	defer mtx.Unlock()
 	path := tmpfile.Name()
 	GetFileMimeType(ctx, path)
 	GetFileDescription(ctx, path)
