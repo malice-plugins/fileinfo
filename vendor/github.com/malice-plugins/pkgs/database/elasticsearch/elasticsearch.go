@@ -8,32 +8,37 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/malice-plugins/go-plugin-utils/database"
-	"github.com/malice-plugins/go-plugin-utils/utils"
+	"github.com/malice-plugins/pkgs/database"
+	"github.com/malice-plugins/pkgs/utils"
 	"github.com/olivere/elastic"
 	"github.com/pkg/errors"
 )
 
 // Database is the elasticsearch malice database object
 type Database struct {
-	Host    string                 `json:"host,omitempty"`
-	Port    string                 `json:"port,omitempty"`
-	URL     string                 `json:"url,omitempty"`
-	Index   string                 `json:"index,omitempty"`
-	Type    string                 `json:"type,omitempty"`
-	Plugins map[string]interface{} `json:"plugins,omitempty"`
+	Host     string                 `json:"host,omitempty"`
+	Port     string                 `json:"port,omitempty"`
+	URL      string                 `json:"url,omitempty"`
+	Username string                 `json:"username,omitempty"`
+	Password string                 `json:"password,omitempty"`
+	Index    string                 `json:"index,omitempty"`
+	Type     string                 `json:"type,omitempty"`
+	Plugins  map[string]interface{} `json:"plugins,omitempty"`
 }
 
 var (
-	defaultHost string
-	defaultPort string
-	defaultURL  string
+	defaultIndex string
+	defaultType  string
+	defaultHost  string
+	defaultPort  string
+	defaultURL   string
 )
 
 func init() {
+	defaultIndex = utils.Getopt("MALICE_ELASTICSEARCH_INDEX", "malice")
+	defaultType = utils.Getopt("MALICE_ELASTICSEARCH_TYPE", "samples")
 	defaultHost = utils.Getopt("MALICE_ELASTICSEARCH_HOST", "localhost")
 	defaultPort = utils.Getopt("MALICE_ELASTICSEARCH_PORT", "9200")
-	defaultURL = fmt.Sprintf("http://%s:%s", defaultHost, defaultPort)
 }
 
 // getURL with the following order of precedence
@@ -43,6 +48,12 @@ func init() {
 func (db *Database) getURL() {
 
 	// If not set use defaults
+	if len(strings.TrimSpace(db.Index)) == 0 {
+		db.Index = defaultIndex
+	}
+	if len(strings.TrimSpace(db.Type)) == 0 {
+		db.Type = defaultType
+	}
 	if len(strings.TrimSpace(db.Host)) == 0 {
 		db.Host = defaultHost
 	}
@@ -51,18 +62,16 @@ func (db *Database) getURL() {
 	}
 
 	// If user set URL param use it
-	if len(strings.TrimSpace(db.URL)) != 0 {
-		return
-	}
+	if len(strings.TrimSpace(db.URL)) == 0 {
+		// If running in docker use `elasticsearch`
+		if _, exists := os.LookupEnv("MALICE_IN_DOCKER"); exists {
+			db.URL = utils.Getopt("MALICE_ELASTICSEARCH_URL", fmt.Sprintf("%s:%s", "elasticsearch", db.Port))
+			log.WithField("elasticsearch_url", db.URL).Debug("running malice in docker")
+			return
+		}
 
-	// If running in docker use `elasticsearch`
-	if _, exists := os.LookupEnv("MALICE_IN_DOCKER"); exists {
-		// TODO: change MALICE_ELASTICSEARCH to MALICE_ELASTICSEARCH_HOST
-		db.URL = fmt.Sprintf("http://%s:%s", utils.Getopt("MALICE_ELASTICSEARCH", "elasticsearch"), db.Port)
-		log.WithField("elasticsearch", db.URL).Debug("running malice in docker")
+		db.URL = utils.Getopt("MALICE_ELASTICSEARCH_URL", fmt.Sprintf("%s:%s", db.Host, db.Port))
 	}
-
-	db.URL = fmt.Sprintf("http://%s:%s", db.Host, db.Port)
 }
 
 // Init initalizes ElasticSearch for use with malice
@@ -79,6 +88,10 @@ func (db *Database) Init() error {
 
 	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(db.URL),
+		elastic.SetBasicAuth(
+			utils.Getopts(db.Username, "MALICE_ELASTICSEARCH_USERNAME", ""),
+			utils.Getopts(db.Password, "MALICE_ELASTICSEARCH_PASSWORD", ""),
+		),
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to create elasticsearch simple client")
@@ -102,7 +115,7 @@ func (db *Database) Init() error {
 			log.Debugf("created index %s", db.Index)
 		}
 	} else {
-		log.Debug("index %s already exists", db.Index)
+		log.Debugf("index %s already exists", db.Index)
 	}
 
 	return nil
@@ -117,6 +130,10 @@ func (db *Database) TestConnection() error {
 	// connect to ElasticSearch where --link elasticsearch was using via malice in Docker
 	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(db.URL),
+		elastic.SetBasicAuth(
+			utils.Getopts(db.Username, "MALICE_ELASTICSEARCH_USERNAME", ""),
+			utils.Getopts(db.Password, "MALICE_ELASTICSEARCH_PASSWORD", ""),
+		),
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to create elasticsearch simple client")
@@ -184,6 +201,10 @@ func (db *Database) StoreFileInfo(sample map[string]interface{}) (elastic.IndexR
 
 	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(db.URL),
+		elastic.SetBasicAuth(
+			utils.Getopts(db.Username, "MALICE_ELASTICSEARCH_USERNAME", ""),
+			utils.Getopts(db.Password, "MALICE_ELASTICSEARCH_PASSWORD", ""),
+		),
 	)
 	if err != nil {
 		return elastic.IndexResponse{}, errors.Wrap(err, "failed to create elasticsearch simple client")
@@ -237,6 +258,10 @@ func (db *Database) StoreHash(hash string) (elastic.IndexResponse, error) {
 
 	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(db.URL),
+		elastic.SetBasicAuth(
+			utils.Getopts(db.Username, "MALICE_ELASTICSEARCH_USERNAME", ""),
+			utils.Getopts(db.Password, "MALICE_ELASTICSEARCH_PASSWORD", ""),
+		),
 	)
 	if err != nil {
 		return elastic.IndexResponse{}, errors.Wrap(err, "failed to create elasticsearch simple client")
@@ -283,6 +308,10 @@ func (db *Database) StorePluginResults(results database.PluginResults) error {
 
 	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(db.URL),
+		elastic.SetBasicAuth(
+			utils.Getopts(db.Username, "MALICE_ELASTICSEARCH_USERNAME", ""),
+			utils.Getopts(db.Password, "MALICE_ELASTICSEARCH_PASSWORD", ""),
+		),
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to create elasticsearch simple client")

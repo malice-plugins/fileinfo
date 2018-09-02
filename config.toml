@@ -1,0 +1,14 @@
+# malice/fileinfo plugin configuration.
+
+name = 'fileinfo'
+description = 'fileinfo - Malice fileinfo Plugin'
+category = 'metadata'
+version = '0.1.0'
+
+accepts = [ '*' ]
+
+[system]
+cpu = 0.5
+ram = 256 # MB
+
+[settings]

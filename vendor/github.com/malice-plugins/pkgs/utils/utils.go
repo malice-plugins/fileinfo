@@ -63,6 +63,19 @@ func Getopt(name, dfault string) string {
 	return value
 }
 
+// Getopts reads from user input then environment variable and finally a sane default.
+func Getopts(userInput, envVar, dfault string) string {
+
+	if len(strings.TrimSpace(userInput)) > 0 {
+		return userInput
+	}
+	value := os.Getenv(envVar)
+	if value == "" {
+		value = dfault
+	}
+	return value
+}
+
 // Assert asserts there was no error, else log.Fatal
 func Assert(err error) {
 	if err != nil {

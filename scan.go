@@ -17,13 +17,18 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/fatih/structs"
 	"github.com/gorilla/mux"
-	"github.com/malice-plugins/go-plugin-utils/database"
-	"github.com/malice-plugins/go-plugin-utils/database/elasticsearch"
-	"github.com/malice-plugins/go-plugin-utils/utils"
+	"github.com/malice-plugins/pkgs/database"
+	"github.com/malice-plugins/pkgs/database/elasticsearch"
+	"github.com/malice-plugins/pkgs/utils"
 	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 	"github.com/rakyll/magicmime"
 	"github.com/urfave/cli"
+)
+
+const (
+	name     = "fileinfo"
+	category = "metadata"
 )
 
 var (
@@ -35,11 +40,9 @@ var (
 	fi FileInfo
 
 	mtx sync.Mutex
-)
 
-const (
-	name     = "fileinfo"
-	category = "metadata"
+	// es is the elasticsearch database object
+	es elasticsearch.Database
 )
 
 type pluginResults struct {
@@ -183,44 +186,6 @@ func ParseTRiDOutput(tridout string, err error) []string {
 	return keepLines
 }
 
-// func printMarkDownTable(finfo FileInfo) {
-//
-// 	fmt.Println("#### Magic")
-// 	table := clitable.New([]string{"Field", "Value"})
-// 	table.AddRow(map[string]interface{}{"Field": "Mime", "Value": finfo.Magic.Mime})
-// 	table.AddRow(map[string]interface{}{"Field": "Description", "Value": finfo.Magic.Description})
-// 	table.Markdown = true
-// 	table.Print()
-// 	fmt.Println()
-//
-// 	if len(finfo.SSDeep) > 0 {
-// 		// print ssdeep
-// 		fmt.Println("#### SSDeep")
-// 		fmt.Println(finfo.SSDeep)
-// 		fmt.Println()
-// 	}
-//
-// 	if finfo.TRiD != nil {
-// 		// print trid
-// 		fmt.Println("#### TRiD")
-// 		for _, trd := range finfo.TRiD {
-// 			fmt.Println(" - ", trd)
-// 		}
-// 		fmt.Println()
-// 	}
-//
-// 	if finfo.Exiftool != nil {
-// 		// print exiftool
-// 		fmt.Println("#### Exiftool")
-// 		table := clitable.New([]string{"Field", "Value"})
-// 		for key, value := range finfo.Exiftool {
-// 			table.AddRow(map[string]interface{}{"Field": key, "Value": value})
-// 		}
-// 		table.Markdown = true
-// 		table.Print()
-// 	}
-// }
-
 func generateMarkDownTable(fi FileInfo) string {
 	var tplOut bytes.Buffer
 
@@ -309,8 +274,6 @@ func webAvScan(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	es := elasticsearch.Database{Index: "malice", Type: "samples"}
-
 	cli.AppHelpTemplate = utils.AppHelpTemplate
 	app := cli.NewApp()
 
@@ -344,11 +307,11 @@ func main() {
 			EnvVar: "MALICE_PROXY",
 		},
 		cli.StringFlag{
-			Name:        "elasitcsearch",
+			Name:        "elasticsearch",
 			Value:       "",
-			Usage:       "elasitcsearch address for Malice to store results",
-			EnvVar:      "MALICE_ELASTICSEARCH",
-			Destination: &es.Host,
+			Usage:       "elasticsearch url for Malice to store results",
+			EnvVar:      "MALICE_ELASTICSEARCH_URL",
+			Destination: &es.URL,
 		},
 		cli.IntFlag{
 			Name:   "timeout",
@@ -453,7 +416,7 @@ func main() {
 				fmt.Println(string(fileInfoJSON))
 			}
 		} else {
-			log.Fatal(fmt.Errorf("Please supply a file to scan with malice/fileinfo"))
+			log.Fatal(fmt.Errorf("Please supply a file to scan with malice/%s", name))
 		}
 		return nil
 	}

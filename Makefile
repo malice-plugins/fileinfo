@@ -2,8 +2,9 @@ REPO=malice-plugins/fileinfo
 ORG=malice
 NAME=fileinfo
 CATEGORY=metadata
-VERSION=$(shell cat VERSION)
-MALWARE=test/malware
+VERSION?=$(shell cat VERSION)
+MALWARE=tests/malware
+
 
 all: build size tag test test_markdown test_web
 
@@ -46,19 +47,21 @@ fi-test: test
 .PHONY: start_elasticsearch
 start_elasticsearch:
 ifeq ("$(shell docker inspect -f {{.State.Running}} elasticsearch)", "true")
-	@echo "===> elasticsearch already running"
-else
-	@echo "===> Starting elasticsearch"
+	@echo "===> elasticsearch already running.  Stopping now..."
 	@docker rm -f elasticsearch || true
-	@docker run --init -d --name elasticsearch -p 9200:9200 malice/elasticsearch:6.3; sleep 10
 endif
+	@echo "===> Starting elasticsearch"
+	@docker run --init -d --name elasticsearch -p 9200:9200 malice/elasticsearch:6.4; sleep 15
 
 .PHONY: malware
 malware:
-ifeq (,$(wildcard test/malware))
+ifeq (,$(wildcard $(MALWARE)))
 	wget https://github.com/maliceio/malice-av/raw/master/samples/befb88b89c2eb401900a68e9f5b78764203f2b48264fcc3f7121bf04a57fd408 -O $(MALWARE)
 	cd test; echo "TEST" > not.malware
 endif
+
+.PHONY: test_all
+test_all: test test_elastic test_markdown test_web
 
 .PHONY: test
 test: malware
@@ -70,7 +73,7 @@ test: malware
 .PHONY: test_elastic
 test_elastic: start_elasticsearch malware
 	@echo "===> ${NAME} test_elastic found"
-	docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH=elasticsearch -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(MALWARE)
+	docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH_URL=elasticsearch:9200 -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(MALWARE)
 	# @echo "===> ${NAME} test_elastic NOT found"
 	# docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH=elasticsearch $(ORG)/$(NAME):$(VERSION) -V --api ${MALICE_VT_API} lookup $(MISSING_HASH)
 	http localhost:9200/malice/_search | jq . > docs/elastic.json
@@ -85,7 +88,7 @@ test_markdown: test_elastic
 test_web: malware stop
 	@echo "===> Starting web service"
 	@docker run -d --name $(NAME) -p 3993:3993 $(ORG)/$(NAME):$(VERSION) web
-	sleep 10; http -f localhost:3993/scan malware@test/malware
+	http -f localhost:3993/scan malware@$(MALWARE)
 	@echo "===> Stopping web service"
 	@docker logs $(NAME)
 	@docker rm -f $(NAME)
