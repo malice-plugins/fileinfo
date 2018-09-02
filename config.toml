@@ -1,7 +1,7 @@
 # malice/fileinfo plugin configuration.
 
 name = 'fileinfo'
-description = 'fileinfo - Malice fileinfo Plugin'
+description = 'Malice File Info Plugin (exiftool, TRiD and ssdeep)'
 category = 'metadata'
 version = '0.1.0'
 
