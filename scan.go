@@ -378,10 +378,10 @@ func main() {
 			fileInfo.MarkDown = generateMarkDownTable(fileInfo)
 
 			// upsert into Database
-			if len(c.String("elasitcsearch")) > 0 {
+			if len(c.String("elasticsearch")) > 0 {
 				err := es.Init()
 				if err != nil {
-					return errors.Wrap(err, "failed to initalize elasitcsearch")
+					return errors.Wrap(err, "failed to initalize elasticsearch")
 				}
 				err = es.StorePluginResults(database.PluginResults{
 					ID:       utils.Getopt("MALICE_SCANID", utils.GetSHA256(path)),
