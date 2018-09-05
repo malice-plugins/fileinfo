@@ -1,5 +1,3 @@
-# Malware
-
 #### Magic
 
 | Field       | Value                                             |
@@ -21,47 +19,48 @@
 
 #### Exiftool
 
-| Field                 | Value                                           |
-| --------------------- | ----------------------------------------------- |
-| CharacterSet          | Unicode                                         |
-| CodeSize              | 20480                                           |
-| Comments              |                                                 |
-| CompanyName           | Microsoft Corporation                           |
-| EntryPoint            | 0x5a46                                          |
-| ExifToolVersionNumber | 11.06                                           |
-| FileDescription       | Internet Explorer                               |
-| FileFlags             | Private build                                   |
-| FileFlagsMask         | 0x003f                                          |
-| FileOS                | Unknown (0)                                     |
-| FileSize              | 40 kB                                           |
-| FileSubtype           | 0                                               |
-| FileType              | Win32 EXE                                       |
-| FileTypeExtension     | exe                                             |
-| FileVersion           | 6.00.2900.2180 (xpsp_sp2_rtm.040803-2158)       |
-| FileVersionNumber     | 6.0.2930.2180                                   |
-| ImageVersion          | 0.0                                             |
-| InitializedDataSize   | 20480                                           |
-| InternalName          | iexplore                                        |
-| LanguageCode          | Neutral                                         |
-| LegalCopyright        | (C) Microsoft Corporation. All rights reserved. |
-| LegalTrademarks       |                                                 |
-| LinkerVersion         | 6.0                                             |
-| MIMEType              | application/octet-stream                        |
-| MachineType           | Intel 386 or later, and compatibles             |
-| OSVersion             | 4.0                                             |
-| ObjectFileType        | Unknown                                         |
-| OriginalFileName      | IEXPLORE.EXE                                    |
-| PEType                | PE32                                            |
-| PrivateBuild          |                                                 |
-| ProductName           | Microsoft(R) Windows(R) Operating System        |
-| ProductVersion        | 6.00.2900.2180                                  |
-| ProductVersionNumber  | 6.0.2930.2180                                   |
-| SpecialBuild          |                                                 |
-| Subsystem             | Windows GUI                                     |
-| SubsystemVersion      | 4.0                                             |
-| UninitializedDataSize | 0                                               |
+| Field                    | Value                                                      |
+| ------------------------ | ---------------------------------------------------------- |
+| CharacterSet             | Unicode                                                    |
+| CodeSize                 | 20480                                                      |
+| Comments                 |                                                            |
+| CompanyName              | Microsoft Corporation                                      |
+| EntryPoint               | 0x5a46                                                     |
+| ExifToolVersionNumber    | 11.10                                                      |
+| FileDescription          | Internet Explorer                                          |
+| FileFlags                | Private build                                              |
+| FileFlagsMask            | 0x003f                                                     |
+| FileOS                   | Unknown (0)                                                |
+| FileSize                 | 40 kB                                                      |
+| FileSubtype              | 0                                                          |
+| FileType                 | Win32 EXE                                                  |
+| FileTypeExtension        | exe                                                        |
+| FileVersion              | 6.00.2900.2180 (xpsp_sp2_rtm.040803-2158)                  |
+| FileVersionNumber        | 6.0.2930.2180                                              |
+| ImageFileCharacteristics | No relocs, Executable, No line numbers, No symbols, 32-bit |
+| ImageVersion             | 0.0                                                        |
+| InitializedDataSize      | 20480                                                      |
+| InternalName             | iexplore                                                   |
+| LanguageCode             | Neutral                                                    |
+| LegalCopyright           | (C) Microsoft Corporation. All rights reserved.            |
+| LegalTrademarks          |                                                            |
+| LinkerVersion            | 6.0                                                        |
+| MIMEType                 | application/octet-stream                                   |
+| MachineType              | Intel 386 or later, and compatibles                        |
+| OSVersion                | 4.0                                                        |
+| ObjectFileType           | Unknown                                                    |
+| OriginalFileName         | IEXPLORE.EXE                                               |
+| PEType                   | PE32                                                       |
+| PrivateBuild             |                                                            |
+| ProductName              | Microsoft(R) Windows(R) Operating System                   |
+| ProductVersion           | 6.00.2900.2180                                             |
+| ProductVersionNumber     | 6.0.2930.2180                                              |
+| SpecialBuild             |                                                            |
+| Subsystem                | Windows GUI                                                |
+| SubsystemVersion         | 4.0                                                        |
+| UninitializedDataSize    | 0                                                          |
 
-# NOT Malware
+---
 
 #### Magic
 

@@ -1,15 +1,7 @@
-FROM ubuntu:xenial
-
-LABEL maintainer "https://github.com/blacktop"
-
-LABEL malice.plugin.repository = "https://github.com/malice-plugins/fileinfo.git"
-LABEL malice.plugin.category="metadata"
-LABEL malice.plugin.mime="*"
-LABEL malice.plugin.docker.engine="*"
-
-# Create a malice user and group first so the IDs get set the same way, even as
-# the rest of this may change over time.
-RUN groupadd -r malice && useradd -r -g malice malice
+####################################################
+# GOSU BUILDER
+####################################################
+FROM ubuntu:xenial as gosu_builder
 
 ENV GOSU_VERSION 1.10
 RUN set -ex; \
@@ -38,15 +30,33 @@ RUN set -ex; \
   \
   chmod +x /usr/local/bin/gosu; \
   # verify that the binary works
-  gosu nobody true; \
-  \
-  echo "Clean up unnecessary files..." \
-  && apt-get purge -y --auto-remove $fetchDeps \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  gosu nobody true
+
+####################################################
+# GOLANG BUILDER
+####################################################
+FROM golang:1.11 as go_builder
+RUN apt-get update && apt-get install -y libmagic-dev libc6
+COPY . /go/src/github.com/maliceio/malice-fileinfo
+WORKDIR /go/src/github.com/maliceio/malice-fileinfo
+RUN go get -u github.com/golang/dep/cmd/dep
+RUN dep ensure
+RUN go build -ldflags "-s -w -X main.Version=v$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info
+
+####################################################
+# FILEINFO BUILDER
+####################################################
+FROM ubuntu:xenial
+
+LABEL maintainer "https://github.com/blacktop"
+
+LABEL malice.plugin.repository = "https://github.com/malice-plugins/fileinfo.git"
+LABEL malice.plugin.category="metadata"
+LABEL malice.plugin.mime="*"
+LABEL malice.plugin.docker.engine="*"
 
 ENV SSDEEP 2.14.1
-ENV EXIFTOOL 11.06
+ENV EXIFTOOL 11.10
 
 RUN buildDeps='ca-certificates \
   build-essential \
@@ -56,8 +66,6 @@ RUN buildDeps='ca-certificates \
   && set -x \
   && apt-get update -qq \
   && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libc6 \
-  && mkdir /malware \
-  && chown -R malice:malice /malware \
   && echo "Downloading TRiD and Database..." \
   && curl -Ls http://mark0.net/download/trid_linux_64.zip > /tmp/trid_linux_64.zip \
   && curl -Ls http://mark0.net/download/triddefs.zip > /tmp/triddefs.zip \
@@ -90,40 +98,23 @@ RUN buildDeps='ca-certificates \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.gnupg
 
-ENV GOLANG_VERSION 1.11
-ENV GOLANG_DOWNLOAD_SHA256 b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499
+RUN apt-get update -qq && apt-get install -yq --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY . /go/src/github.com/maliceio/malice-fileinfo
-RUN buildDeps='ca-certificates \
-  build-essential \
-  mercurial \
-  git-core \
-  openssl \
-  gnupg \
-  curl' \
-  && set -x \
-  && apt-get update -qq \
-  && apt-get install -yq --no-install-recommends $buildDeps \
-  && echo "Install Go..." \
-  && cd /tmp \
-  && ARCH="$(dpkg --print-architecture)" \
-  && curl -Ls https://storage.googleapis.com/golang/go$GOLANG_VERSION.linux-$ARCH.tar.gz > /tmp/golang.tar.gz \
-  && echo "$GOLANG_DOWNLOAD_SHA256  golang.tar.gz" | sha256sum -c - \
-  && tar -C /usr/local -xzf /tmp/golang.tar.gz \
-  && export PATH=$PATH:/usr/local/go/bin \
-  && echo "Building info Go binary..." \
-  && cd /go/src/github.com/maliceio/malice-fileinfo \
-  && export GOPATH=/go \
-  && go version \
-  && go get -u github.com/golang/dep/cmd/dep \
-  && /go/bin/dep ensure \
-  && go build -ldflags "-s -w -X main.Version=v$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info \
-  && echo "Clean up unnecessary files..." \
-  && apt-get clean \
-  && apt-get purge -y --auto-remove --allow-remove-essential $buildDeps \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /go /usr/local/go /root/.gnupg
+COPY --from=gosu_builder /usr/local/bin/gosu /usr/local/bin/gosu
+COPY --from=go_builder /bin/info /bin/info
+
+# Create a malice user and group first so the IDs get set the same way, even as
+# the rest of this may change over time.
+RUN groupadd -r malice \
+  && useradd --no-log-init -r -g malice malice \
+  && mkdir /malware \
+  && chown -R malice:malice /malware
 
 WORKDIR /malware
 
 ENTRYPOINT ["gosu","malice","info"]
 CMD ["--help"]
+
+####################################################
+####################################################

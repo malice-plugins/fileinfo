@@ -79,6 +79,16 @@ test_elastic: start_elasticsearch malware
 	docker run --rm --link elasticsearch -e MALICE_ELASTICSEARCH_URL=http://elasticsearch:9200 -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(NOT_MALWARE)
 	http localhost:9200/malice/_search | jq . > docs/elastic.json
 
+.PHONY: test_extern_elastic
+test_extern_elastic: malware
+	@echo "===> ${NAME} test_extern_elastic found"
+	docker run --rm -it \
+	-e MALICE_ELASTICSEARCH_URL=${MALICE_ELASTICSEARCH_URL} \
+	-e MALICE_ELASTICSEARCH_USERNAME=${MALICE_ELASTICSEARCH_USERNAME} \
+	-e MALICE_ELASTICSEARCH_PASSWORD=${MALICE_ELASTICSEARCH_PASSWORD} \
+	-e MALICE_ELASTICSEARCH_INDEX="test" \
+	-v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -V $(MALWARE)
+
 .PHONY: test_markdown
 test_markdown: test_elastic
 	@echo "===> ${NAME} test_markdown"
