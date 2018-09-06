@@ -10,7 +10,6 @@ tests*
 LICENSE
 Makefile
 README*
-VERSION
 build
 circle.yml
 docker-compose.yml
