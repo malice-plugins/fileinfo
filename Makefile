@@ -52,7 +52,8 @@ ifeq ("$(shell docker inspect -f {{.State.Running}} elasticsearch)", "true")
 	@docker rm -f elasticsearch || true
 endif
 	@echo "===> Starting elasticsearch"
-	@docker run --init -d --name elasticsearch -p 9200:9200 malice/elasticsearch:6.4; sleep 15
+	@docker run --init -d --name elasticsearch -p 9200:9200 blacktop/elasticsearch:6
+	@wait-for-es
 
 .PHONY: malware
 malware:
