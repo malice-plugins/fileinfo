@@ -29,7 +29,7 @@ RUN groupadd -r malice \
   && chown -R malice:malice /malware
 
 ENV SSDEEP 2.14.1
-ENV EXIFTOOL 11.65
+ENV EXIFTOOL 12.02
 
 RUN buildDeps='ca-certificates \
   build-essential \
@@ -38,7 +38,7 @@ RUN buildDeps='ca-certificates \
   curl' \
   && set -x \
   && apt-get update -qq \
-  && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libc6 \
+  && apt-get install -yq --no-install-recommends $buildDeps libmagic-dev libc6 cpanminus \
   && echo "Downloading TRiD and Database..." \
   && curl -Ls http://mark0.net/download/trid_linux_64.zip > /tmp/trid_linux_64.zip \
   && curl -Ls http://mark0.net/download/triddefs.zip > /tmp/triddefs.zip \
@@ -58,7 +58,8 @@ RUN buildDeps='ca-certificates \
   && make \
   && make install \
   && echo "Installing exiftool..." \
-  && curl -Ls https://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-$EXIFTOOL.tar.gz > \
+  && cpanm --notest File::Find Archive::Zip Compress::Raw::Zlib \
+  && curl -Ls https://exiftool.org/Image-ExifTool-$EXIFTOOL.tar.gz> \
   /tmp/exiftool.tar.gz \
   && cd /tmp \
   && tar xzf exiftool.tar.gz \
