@@ -1,7 +1,7 @@
 ####################################################
 # GOLANG BUILDER
 ####################################################
-FROM golang:1.11 as go_builder
+FROM golang:1 as go_builder
 RUN apt-get update && apt-get install -y libmagic-dev libc6
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 WORKDIR /go/src/github.com/maliceio/malice-fileinfo
@@ -29,7 +29,7 @@ RUN groupadd -r malice \
   && chown -R malice:malice /malware
 
 ENV SSDEEP 2.14.1
-ENV EXIFTOOL 12.02
+ENV EXIFTOOL 12.25
 
 RUN buildDeps='ca-certificates \
   build-essential \
