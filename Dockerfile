@@ -5,14 +5,12 @@ FROM golang:1 as go_builder
 RUN apt-get update && apt-get install -y libmagic-dev libc6
 COPY . /go/src/github.com/maliceio/malice-fileinfo
 WORKDIR /go/src/github.com/maliceio/malice-fileinfo
-RUN go get -u github.com/golang/dep/cmd/dep
-RUN dep ensure
 RUN go build -ldflags "-s -w -X main.Version=v$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/info
 
 ####################################################
 # FILEINFO BUILDER
 ####################################################
-FROM ubuntu:bionic
+FROM ubuntu:jammy
 
 LABEL maintainer "https://github.com/blacktop"
 
@@ -29,7 +27,7 @@ RUN groupadd -r malice \
   && chown -R malice:malice /malware
 
 ENV SSDEEP 2.14.1
-ENV EXIFTOOL 12.25
+ENV EXIFTOOL 12.76
 
 RUN buildDeps='ca-certificates \
   build-essential \
